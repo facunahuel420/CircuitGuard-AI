@@ -1,0 +1,30 @@
+# Environment variables & secrets (STRICT ZERO-LEAK POLICY)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Python cache & bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+
+# Temporary, log & OS files
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+/tmp/
