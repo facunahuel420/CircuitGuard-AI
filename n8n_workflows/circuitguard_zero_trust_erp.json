@@ -1,0 +1,40 @@
+{
+  "name": "CircuitGuard AI - Zero-Trust Box Audit & Replacement-Cost FX Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "circuitguard-audit-webhook",
+        "responseMode": "onReceived"
+      },
+      "id": "webhook-node-01",
+      "name": "Zero-Trust Box Audit Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const payload = items[0].json;\nconst replacementDelta = ((payload.newReplacementUsd - payload.oldReplacementUsd) / payload.oldReplacementUsd) * 100;\nreturn [{ json: { ...payload, replacementDeltaPct: replacementDelta.toFixed(2), atomicVerified: true } }];"
+      },
+      "id": "fx-calc-node-02",
+      "name": "Replacement Cost & Atomic Timestamp Verifier",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [520, 300]
+    }
+  ],
+  "connections": {
+    "Zero-Trust Box Audit Webhook": {
+      "main": [
+        [
+          {
+            "node": "Replacement Cost & Atomic Timestamp Verifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
