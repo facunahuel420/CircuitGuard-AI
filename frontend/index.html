@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CircuitGuard AI v0.1 — Cyber-Tactical Vision Lab & Zero-Trust ERP</title>
+  <style>
+    :root {
+      --bg-core: #0a0d0e;
+      --bg-panel: #111618;
+      --bg-panel-alt: #161d20;
+      --border-tactical: #1f2937;
+      --accent-emerald: #00ff88;
+      --accent-emerald-dim: rgba(0, 255, 136, 0.14);
+      --accent-cyan: #00d4ff;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --text-primary: #e5e7eb;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Ubuntu Mono', monospace;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-core);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image:
+        radial-gradient(circle at 12% 8%, rgba(0, 255, 136, 0.05) 0%, transparent 35%),
+        radial-gradient(circle at 88% 90%, rgba(0, 212, 255, 0.04) 0%, transparent 35%);
+    }
+
+    /* Top Tactical Header */
+    .tactical-header {
+      background-color: var(--bg-panel);
+      border-bottom: 1px solid var(--border-tactical);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .brand-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: var(--accent-emerald-dim);
+      border: 1px solid var(--accent-emerald);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 0 14px rgba(0, 255, 136, 0.25);
+    }
+
+    .brand-title {
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .brand-subtitle {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    .status-cluster {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .pill {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      padding: 0.32rem 0.7rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-tactical);
+      background: var(--bg-panel-alt);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .pill-emerald {
+      border-color: var(--accent-emerald);
+      color: var(--accent-emerald);
+      background: var(--accent-emerald-dim);
+    }
+
+    .pill-amber {
+      border-color: var(--accent-amber);
+      color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    .dot-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+    }
+
+    /* Navigation Tabs */
+    .tab-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.85rem 1.5rem 0;
+      border-bottom: 1px solid var(--border-tactical);
+      background: rgba(17, 22, 24, 0.75);
+    }
+
+    .tab-btn {
+      background: var(--bg-panel);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-tactical);
+      border-bottom: none;
+      padding: 0.72rem 1.15rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tab-btn:hover {
+      color: #ffffff;
+      border-color: #374151;
+    }
+
+    .tab-btn.active {
+      color: var(--bg-core);
+      background: var(--accent-emerald);
+      border-color: var(--accent-emerald);
+      box-shadow: 0 -2px 14px rgba(0, 255, 136, 0.25);
+    }
+
+    /* Main Workspace Container */
+    .workspace {
+      flex: 1;
+      padding: 1.35rem 1.5rem 2.5rem;
+      max-width: 1640px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .tab-pane {
+      display: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Panels & Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+      gap: 1.15rem;
+    }
+
+    /* Asymmetric In-Place Card Expansion for Dual Cameras (70% / 30% without blocking UI) */
+    .dual-cameras-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.15rem;
+      align-items: start;
+      transition: grid-template-columns 0.25s ease;
+    }
+
+    .dual-cameras-grid.expand-a {
+      grid-template-columns: 7fr 3fr;
+    }
+
+    .dual-cameras-grid.expand-b {
+      grid-template-columns: 3fr 7fr;
+    }
+
+    .panel.expanded-card {
+      border-color: var(--accent-emerald);
+      box-shadow: 0 0 22px rgba(0, 255, 136, 0.18);
+    }
+
+    .panel.expanded-card .video-stage {
+      aspect-ratio: auto;
+      height: 460px;
+    }
+
+    .panel.expanded-card .video-stage video {
+      object-fit: contain;
+      background: #050708;
+    }
+
+    .btn-expand-card {
+      padding: 0.3rem 0.65rem;
+      font-size: 0.74rem;
+      border-color: rgba(0, 255, 136, 0.45);
+      color: var(--accent-emerald);
+      background: rgba(0, 255, 136, 0.08);
+    }
+
+    .btn-expand-card.active {
+      background: var(--accent-emerald);
+      color: var(--bg-core);
+      font-weight: 700;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.15rem;
+    }
+
+    .panel {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-tactical);
+      border-radius: 10px;
+      padding: 1.15rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 0.75rem;
+      margin-bottom: 0.95rem;
+      border-bottom: 1px solid var(--border-tactical);
+    }
+
+    .panel-title {
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--accent-emerald);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    /* Video Viewport Styling */
+    .video-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #050708;
+      border: 1px solid var(--border-tactical);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 0.85rem;
+    }
+
+    .video-stage video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .video-hud {
+      position: absolute;
+      top: 0.6rem;
+      left: 0.6rem;
+      right: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+    }
+
+    .hud-tag {
+      background: rgba(10, 13, 14, 0.82);
+      border: 1px solid rgba(0, 255, 136, 0.45);
+      color: var(--accent-emerald);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .crosshair-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border: 1px dashed rgba(0, 255, 136, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .crosshair-overlay::before,
+    .crosshair-overlay::after {
+      content: '';
+      position: absolute;
+      background: rgba(0, 255, 136, 0.22);
+    }
+
+    .crosshair-overlay::before {
+      width: 28px;
+      height: 1px;
+    }
+
+    .crosshair-overlay::after {
+      width: 1px;
+      height: 28px;
+    }
+
+    /* Controls & Inputs */
+    .control-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+    }
+
+    label.field-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.32rem;
+    }
+
+    select,
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      background: var(--bg-core);
+      color: var(--text-primary);
+      border: 1px solid var(--border-tactical);
+      border-radius: 6px;
+      padding: 0.55rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      transition: border-color 0.15s ease;
+    }
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent-emerald);
+      box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.15);
+    }
+
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.58rem 0.95rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-tactical);
+      background: var(--bg-panel-alt);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+    }
+
+    .btn:hover {
+      border-color: var(--accent-emerald);
+      color: var(--accent-emerald);
+    }
+
+    .btn-primary {
+      background: var(--accent-emerald);
+      color: var(--bg-core);
+      border-color: var(--accent-emerald);
+      font-weight: 700;
+      box-shadow: 0 0 16px rgba(0, 255, 136, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: #1aff95;
+      color: var(--bg-core);
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #f87171;
+    }
+
+    /* Toggle Switch */
+    .switch-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      padding: 0.65rem 0.9rem;
+      background: var(--bg-core);
+      border: 1px solid var(--border-tactical);
+      border-radius: 8px;
+    }
+
+    .toggle-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+
+    .toggle-wrap input {
+      accent-color: var(--accent-emerald);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    /* Snapshot Thumbnails & Diagnostic Chat */
+    .snap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .snap-box {
+      background: var(--bg-core);
+      border: 1px solid var(--border-tactical);
+      border-radius: 6px;
+      padding: 0.45rem;
+      text-align: center;
+    }
+
+    .snap-box img {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #1f2937;
+      background: #060809;
+    }
+
+    .chat-log {
+      background: #0b1114;
+      border: 1px solid var(--border-tactical);
+      border-radius: 8px;
+      padding: 1.1rem;
+      height: 320px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 0.98rem;
+      line-height: 1.65;
+      letter-spacing: 0.01em;
+      color: #e6f4ea;
+      display: flex;
+      flex-direction: column;
+      gap: 0.95rem;
+      margin-bottom: 0.95rem;
+    }
+
+    #chatHistory {
+      min-height: 420px;
+      max-height: 620px;
+      height: auto;
+    }
+
+    .msg {
+      padding: 16px 20px;
+      border-radius: 8px;
+      border-left: 4px solid var(--border-tactical);
+      background: #0b1114;
+      color: #e6f4ea;
+      font-size: 0.98rem;
+      line-height: 1.65;
+      letter-spacing: 0.01em;
+      white-space: pre-wrap;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
+    }
+
+    .msg-user {
+      border-left-color: var(--accent-cyan);
+      background: #0e161b;
+    }
+
+    .msg-ai {
+      border-left-color: var(--accent-emerald);
+      background: #0b1114;
+    }
+
+    .visor-checkbox-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 0.7rem 0.95rem;
+      background: var(--bg-core);
+      border: 1px solid var(--border-tactical);
+      border-radius: 8px;
+      margin-bottom: 0.65rem;
+    }
+
+    .visor-chk-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    .visor-chk-label input[type="checkbox"] {
+      accent-color: var(--accent-emerald);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .target-notice-bar {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 255, 136, 0.4);
+      background: rgba(0, 255, 136, 0.08);
+      color: var(--accent-emerald);
+      margin-bottom: 0.85rem;
+    }
+
+    .target-notice-bar.warn {
+      border-color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.12);
+      color: #fcd34d;
+    }
+
+    /* Compatibility Cards & Tables */
+    .chip-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.7rem;
+    }
+
+    .chip {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-tactical);
+      background: var(--bg-core);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .chip:hover,
+    .chip.active {
+      border-color: var(--accent-emerald);
+      color: var(--accent-emerald);
+      background: var(--accent-emerald-dim);
+    }
+
+    .compat-card {
+      background: var(--bg-core);
+      border: 1px solid var(--border-tactical);
+      border-radius: 8px;
+      padding: 0.95rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .compat-card:hover {
+      border-color: rgba(0, 255, 136, 0.5);
+    }
+
+    .badge-type {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 0.18rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .badge-module { background: rgba(0, 255, 136, 0.15); color: var(--accent-emerald); }
+    .badge-flex { background: rgba(245, 158, 11, 0.16); color: var(--accent-amber); }
+    .badge-ic { background: rgba(0, 212, 255, 0.15); color: var(--accent-cyan); }
+
+    /* Checklist Styling */
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      padding: 0.65rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-tactical);
+      background: var(--bg-core);
+      margin-bottom: 0.55rem;
+      cursor: pointer;
+    }
+
+    .check-item.checked {
+      border-color: var(--accent-emerald);
+      background: rgba(0, 255, 136, 0.06);
+    }
+
+    .check-item input[type="checkbox"] {
+      margin-top: 0.2rem;
+      accent-color: var(--accent-emerald);
+      width: 17px;
+      height: 17px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: var(--bg-core);
+      border: 1px solid var(--border-tactical);
+      border-radius: 99px;
+      overflow: hidden;
+      margin: 0.65rem 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent-emerald);
+      width: 0%;
+      transition: width 0.25s ease;
+    }
+
+    /* Data Table */
+    .tactical-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+
+    .tactical-table th,
+    .tactical-table td {
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid var(--border-tactical);
+      text-align: left;
+    }
+
+    .tactical-table th {
+      color: var(--accent-emerald);
+      background: var(--bg-core);
+      text-transform: uppercase;
+      font-size: 0.72rem;
+    }
+
+    .metric-card {
+      background: var(--bg-core);
+      border: 1px solid var(--border-tactical);
+      border-radius: 8px;
+      padding: 0.85rem;
+    }
+
+    .metric-val {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--accent-emerald);
+      margin-top: 0.2rem;
+    }
+
+    @media (max-width: 980px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header class="tactical-header">
+    <div class="brand-group">
+      <div class="brand-badge">🛡️</div>
+      <div>
+        <div class="brand-title">
+          CIRCUITGUARD AI <span style="font-size:0.72rem; color:var(--accent-emerald);">v0.1 // UBUNTU LINUX</span>
+        </div>
+        <div class="brand-subtitle">
+          Dual-Camera Non-Blocking Vision Lab (Zero v4l2 Lock) • Meta Model API + Baseten • Zero-Trust ERP
+        </div>
+      </div>
+    </div>
+
+    <div class="status-cluster">
+      <span class="pill pill-emerald" id="headerModeBadge">
+        <span class="dot-pulse"></span> MODO SIMULACIÓN ($0.00 COSTO)
+      </span>
+      <span class="pill" id="headerUsbBadge">
+        🔌 v4l2 LOCK GUARD: 100% BROWSER WEBRTC
+      </span>
+      <span class="pill" id="atomicClockBadge">
+        ⏱️ ATOMIC UTC: --:--:--
+      </span>
+    </div>
+  </header>
+
+  <!-- 4 OPERATIONAL TABS -->
+  <nav class="tab-nav" role="tablist">
+    <button class="tab-btn active" data-tab="tab-vision" role="tab" aria-selected="true">
+      🔬 Lab Visión Dual (Sin Bloqueo USB)
+    </button>
+    <button class="tab-btn" data-tab="tab-compat" role="tab" aria-selected="false">
+      🔍 Compatibilidad Avanzada (Módulos, Flex &amp; ICs)
+    </button>
+    <button class="tab-btn" data-tab="tab-quoter" role="tab" aria-selected="false">
+      ⚡ Cotizador Express &amp; Checklist Verificable Anti-Olvido
+    </button>
+    <button class="tab-btn" data-tab="tab-zerotrust" role="tab" aria-selected="false">
+      🛡️ Control Mostrador Zero-Trust &amp; Distribuidor
+    </button>
+  </nav>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="workspace">
+
+    <!-- ================================================================== -->
+    <!-- TAB 1: LAB VISIÓN DUAL (SIN BLOQUEO USB)                           -->
+    <!-- ================================================================== -->
+    <section id="tab-vision" class="tab-pane active">
+
+      <!-- AI Engine & Simulation Control Bar -->
+      <div class="panel" style="margin-bottom: 1.15rem;">
+        <div class="grid-2" style="align-items: center;">
+          <div>
+            <label class="field-label" for="selectAiEngine">
+              MOTOR DE INFERENCIA MULTIMODAL (5 MOTORES DISPONIBLES: META API @ api.meta.ai &amp; BASETEN)
+            </label>
+            <select id="selectAiEngine" name="engineSelect">
+              <option value="baseten-muse-spark-open">
+                Baseten Open-Weights — Muse Spark Open (meta-models/muse-spark-open-1026)
+              </option>
+              <option value="meta-muse-spark-1.3" selected>
+                Meta API — Muse Spark 1.3 Contributor (muse-spark-1.3-contributor)
+              </option>
+              <option value="meta-sam-3.1">
+                Meta API — SAM 3.1 Vision Segmentation (sam-3.1)
+              </option>
+              <option value="meta-muse-wonder-1.0">
+                Meta API — Muse Wonder 1.0 Supervisor &amp; Synthesis (muse-wonder-1.0)
+              </option>
+              <option value="meta-agentic-pipeline">
+                Meta API — Pipeline Agéntico Completo (SAM 3.1 + Muse Spark 1.3 + Muse Wonder 1.0)
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label class="field-label">POLÍTICA DE SEGURIDAD Y COSTO DE EJECUCIÓN</label>
+            <div class="switch-bar">
+              <div>
+                <div style="font-family:var(--font-mono); font-size:0.8rem; font-weight:700; color:var(--accent-emerald);" id="simStatusLabel">
+                  🛡️ Modo Simulación (Costo $0.00 — Offline Seguro)
+                </div>
+                <div style="font-size:0.72rem; color:var(--text-secondary);">
+                  Sin llamadas reales ni gasto de tokens • Estructura lista en <code>.env.example</code>
+                </div>
+              </div>
+              <label class="toggle-wrap" title="Cambiar entre Modo Simulación ($0) y Modo API en Vivo">
+                <input type="checkbox" id="toggleMockMode" checked />
+                <span id="toggleMockText">SIM ($0)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dual Video Viewers Side-by-Side (Supports Asymmetric 70/30 In-Place Expansion) -->
+      <div class="dual-cameras-grid" id="dualCamerasGrid" style="margin-bottom: 1.15rem;">
+
+        <!-- VIEWER A: USB MICROSCOPE -->
+        <div class="panel" id="cardCamA">
+          <div class="panel-header">
+            <div class="panel-title">
+              🔬 Visor A: Microscopio USB (Inspección PCB / Microsoldadura)
+            </div>
+            <div style="display:flex; align-items:center; gap:0.45rem;">
+              <button class="btn btn-expand-card" id="btnExpandCamA" type="button" title="Agrandar cuadro al 70% sin tapar la otra cámara ni el chat">
+                ⤢ Agrandar Cuadro
+              </button>
+              <span class="pill pill-emerald" id="fpsBadgeA">30/60 FPS • NO-LOCK</span>
+            </div>
+          </div>
+
+          <div class="video-stage">
+            <video id="videoMicroscope" autoplay playsinline muted></video>
+            <div class="crosshair-overlay"></div>
+            <div class="video-hud">
+              <span class="hud-tag" id="hudSourceA">STREAM A: STANDBY / SYNTHETIC PCB</span>
+              <span class="hud-tag">SAM-3.1 PAD OVERLAY READY</span>
+            </div>
+          </div>
+
+          <div class="control-row">
+            <div style="flex: 1; min-width: 210px;">
+              <label class="field-label" for="selectCameraA">Dispositivo Video4Linux / Navegador (Visor A)</label>
+              <select id="selectCameraA"></select>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top: 1.15rem;">
+              <button class="btn btn-primary" id="btnStartCamA" type="button">▶️ Iniciar / Cambiar</button>
+              <button class="btn" id="btnSynthCamA" type="button" title="Generar señal sintética 60 FPS de PCB para pruebas sin hardware">🧪 Señal PCB 60FPS</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEWER B: OVERHEAD CAMERA -->
+        <div class="panel" id="cardCamB">
+          <div class="panel-header">
+            <div class="panel-title">
+              🎥 Visor B: Cámara Cenital (Mesa / Tester / Postura de Manos)
+            </div>
+            <div style="display:flex; align-items:center; gap:0.45rem;">
+              <button class="btn btn-expand-card" id="btnExpandCamB" type="button" title="Agrandar cuadro al 70% sin tapar la otra cámara ni el chat">
+                ⤢ Agrandar Cuadro
+              </button>
+              <span class="pill pill-emerald" id="fpsBadgeB">30/60 FPS • NO-LOCK</span>
+            </div>
+          </div>
+
+          <div class="video-stage">
+            <video id="videoOverhead" autoplay playsinline muted></video>
+            <div class="crosshair-overlay"></div>
+            <div class="video-hud">
+              <span class="hud-tag" id="hudSourceB">STREAM B: STANDBY / SYNTHETIC TESTER</span>
+              <span class="hud-tag">MULTIMETER DIODE TRACKING</span>
+            </div>
+          </div>
+
+          <div class="control-row">
+            <div style="flex: 1; min-width: 210px;">
+              <label class="field-label" for="selectCameraB">Dispositivo Video4Linux / Navegador (Visor B)</label>
+              <select id="selectCameraB"></select>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top: 1.15rem;">
+              <button class="btn btn-primary" id="btnStartCamB" type="button">▶️ Iniciar / Cambiar</button>
+              <button class="btn" id="btnSynthCamB" type="button" title="Generar señal sintética 60 FPS de Multímetro/Mesa">🧪 Señal Tester 60FPS</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instant Non-Blocking Frame Capture + Full-Width Ergonomic Technical Diagnostic Chat -->
+      <div style="display: flex; flex-direction: column; gap: 1.15rem;">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">📸 Captura en Memoria (&lt;canvas&gt; Base64 sin cortar Stream)</div>
+            <button class="btn" id="btnRefreshDevices" type="button">🔄 Refrescar Cámaras Ubuntu</button>
+          </div>
+
+          <div class="grid-2" style="align-items: start;">
+            <div>
+              <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                Evita el error <code>v4l2: Device or resource busy</code> en Ubuntu: el backend Python jamás toca <code>/dev/video*</code>. El navegador extrae el fotograma actual directamente desde el buffer de video activo en memoria RAM.
+              </p>
+
+              <div style="margin-bottom: 0.75rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.38rem;">
+                  <label class="field-label" for="symptomInput" style="margin-bottom:0;">
+                    Descripción de la Falla / Medición del Técnico (Modo Diodo / Consumo):
+                  </label>
+                  <div style="display:flex; align-items:center; gap:0.45rem;">
+                    <button class="btn" id="btnVoiceRecord" type="button" style="padding:0.34rem 0.75rem; font-size:0.76rem; border-color:var(--accent-cyan); color:var(--accent-cyan);">
+                      🎙️ Dictar por Voz (Muse Voice Transcribe)
+                    </button>
+                    <span class="pill" id="voiceStatusBadge" style="font-size:0.7rem; padding:0.24rem 0.55rem;">
+                      🎤 WAV 24kHz LISTO
+                    </span>
+                  </div>
+                </div>
+                <textarea id="symptomInput" rows="3" placeholder="Ej: Samsung A32 5G no da imagen tras caída. En conector FPC J6001 mido OL en línea MIPI_DSI0 y 0.002V a tierra en VDD_LCD_3P0..."></textarea>
+              </div>
+
+              <!-- Checkboxes de Selección de Visor para Inferencia -->
+              <label class="field-label">SELECCIÓN DE VISORES A ENVIAR AL MOTOR DE IA:</label>
+              <div class="visor-checkbox-bar">
+                <label class="visor-chk-label" for="chkIncludeVisorA">
+                  <input type="checkbox" id="chkIncludeVisorA" checked />
+                  <span>Incluir Visor A en el análisis IA (Microscopio)</span>
+                </label>
+                <label class="visor-chk-label" for="chkIncludeVisorB">
+                  <input type="checkbox" id="chkIncludeVisorB" checked />
+                  <span>Incluir Visor B en el análisis IA (Cámara Cenital / Tester)</span>
+                </label>
+              </div>
+
+              <div id="activeTargetNotice" class="target-notice-bar">
+                🎯 OBJETIVO DE AUDITORÍA ACTIVO: [ VISOR A + VISOR B ] — Envío dual habilitado.
+              </div>
+
+              <button class="btn btn-primary" id="btnCaptureDiagnose" type="button" style="width: 100%; padding: 0.9rem; font-size: 0.92rem;">
+                📸 Capturar Fotograma Instantáneo (Sin cortar video) y Diagnosticar
+              </button>
+            </div>
+
+            <div>
+              <label class="field-label">VISTA PREVIA DE FOTOGRAMAS EXTRAÍDOS EN MEMORIA RAM:</label>
+              <div class="snap-grid" style="margin-top: 0;">
+                <div class="snap-box">
+                  <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--accent-emerald); margin-bottom:0.35rem;">
+                    FRAME VISOR A (MICROSCOPIO)
+                  </div>
+                  <img id="snapPreviewA" alt="Captura Visor A" style="height: 155px;" />
+                  <div id="snapMetaA" style="font-family:var(--font-mono); font-size:0.7rem; color:var(--text-secondary); margin-top:0.3rem;">
+                    Sin captura previa
+                  </div>
+                </div>
+                <div class="snap-box">
+                  <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--accent-cyan); margin-bottom:0.35rem;">
+                    FRAME VISOR B (CENITAL / TESTER)
+                  </div>
+                  <img id="snapPreviewB" alt="Captura Visor B" style="height: 155px;" />
+                  <div id="snapMetaB" style="font-family:var(--font-mono); font-size:0.7rem; color:var(--text-secondary); margin-top:0.3rem;">
+                    Sin captura previa
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full-Width Ergonomic Technical Diagnostic Chat -->
+        <div class="panel" style="width: 100%;">
+          <div class="panel-header">
+            <div class="panel-title">🧠 Telemetría &amp; Chat Técnico Paso a Paso (Vista Amplia de Alta Legibilidad)</div>
+            <span class="pill pill-emerald" id="latencyBadge">LATENCIA: -- ms</span>
+          </div>
+
+          <div class="chat-log" id="chatHistory">
+            <div class="msg msg-ai">[SISTEMA CIRCUITGUARD AI INICIALIZADO]
+• Arquitectura: Dual-Camera Non-Blocking WebRTC (0 bloqueos v4l2 en Linux).
+• Endpoints Meta API: /v1/chat/completions (MAX_TOKENS = 4096) + SAM 3.1 Nativo (/v1/responses SSE) + Muse Voice Transcribe (/v1/asr/transcribe WAV 24kHz).
+• Endpoint Baseten: https://inference.baseten.co/v1/chat/completions.
+• Estado: MODO SIMULACIÓN ($0.00) ACTIVO.
+Seleccioná qué visor(es) incluir con los checkboxes de arriba, usá "🎙️ Dictar por Voz" si tenés las manos ocupadas en el cautín, y presioná "📸 Capturar Fotograma Instantáneo y Diagnosticar".</div>
+          </div>
+
+          <div class="control-row">
+            <button class="btn" id="btnLoadSampleCase1" type="button">⚡ Caso: Corto VDD_MAIN / PMIC</button>
+            <button class="btn" id="btnLoadSampleCase2" type="button">⚡ Caso: FPC Fisurado / OL en MIPI</button>
+            <button class="btn" id="btnClearChat" type="button">🧹 Limpiar Log</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- TAB 2: COMPATIBILIDAD AVANZADA (MÓDULOS, FLEX & ICS)               -->
+    <!-- ================================================================== -->
+    <section id="tab-compat" class="tab-pane">
+      <div class="panel" style="margin-bottom: 1.15rem;">
+        <div class="panel-header">
+          <div class="panel-title">🔍 Buscador Cruzado de Módulos, Alertas de Flex FPC / IC Táctil e ICs Donantes</div>
+          <span class="pill pill-emerald" id="compatCountBadge">Cargando registros...</span>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label class="field-label" for="compatSearchInput">Buscar por modelo, código de flex, controlador Touch (BOE, Tianma, Synaptics, Novatek) o código IC (PMIC / IF-PMIC):</label>
+            <input type="text" id="compatSearchInput" placeholder="Ej: A12, A03, iPhone 11, Novatek, Synaptics, BOE, Tianma, S2MU106X01, PM6150..." />
+          </div>
+          <div>
+            <label class="field-label" for="compatCategorySelect">Filtrar por Categoría Técnica:</label>
+            <select id="compatCategorySelect">
+              <option value="ALL">Todas las Categorías (Módulos + Flex/Remanufactura + ICs Donantes)</option>
+              <option value="MODULE">📱 Compatibilidad de Módulos de Pantalla</option>
+              <option value="FLEX_REMAN">⚠️ Alertas de Remanufactura, Versión de Flex FPC &amp; IC Touch</option>
+              <option value="IC_DONOR">🔬 Compatibilidad Cruzada de ICs (PMIC / IF-PMIC / Carga)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="chip-bar" id="compatQuickChips">
+          <button class="chip active" data-query="">Ver Todo</button>
+          <button class="chip" data-query="A12">Samsung A12 / A02 / A32 5G</button>
+          <button class="chip" data-query="A03">Samsung A03 / A03S / A02S</button>
+          <button class="chip" data-query="iPhone 11">iPhone 11 / XR</button>
+          <button class="chip" data-query="BOE">Panel BOE / Tianma</button>
+          <button class="chip" data-query="Synaptics">IC Synaptics / Novatek</button>
+          <button class="chip" data-query="PMIC">Donantes PMIC / IF-PMIC</button>
+        </div>
+      </div>
+
+      <div class="grid-3" id="compatResultsGrid"></div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- TAB 3: COTIZADOR EXPRESS & CHECKLIST VERIFICABLE ANTI-OLVIDO       -->
+    <!-- ================================================================== -->
+    <section id="tab-quoter" class="tab-pane">
+      <div class="grid-2">
+
+        <!-- Left: Express Counter Quoter -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">⚡ Cotizador Express de Mostrador y Laboratorio</div>
+            <span class="pill pill-emerald">CÁLCULO INSTANTÁNEO</span>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:0.85rem;">
+            <div>
+              <label class="field-label" for="quoteServiceType">Tipo de Intervención Técnica (Actualiza el Checklist Anti-Olvido):</label>
+              <select id="quoteServiceType">
+                <option value="MODULE_SWAP">📱 Cambio de Módulo de Pantalla (Incell / OLED / Original)</option>
+                <option value="CHARGING_PORT">🔌 Cambio de Pin de Carga / Sub-Placa Inferior</option>
+                <option value="GLASS_REMAN">💎 Remanufactura de Vidrio (Laminación OCA + Marco)</option>
+                <option value="MICROSOLDER">🔬 Microsoldadura PCB (Conector FPC / Reballing PMIC / Pistas)</option>
+              </select>
+            </div>
+
+            <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap:0.75rem;">
+              <div>
+                <label class="field-label" for="quoteBrandSelect">Marca / Arquitectura del Equipo (Reglas Específicas):</label>
+                <select id="quoteBrandSelect">
+                  <option value="MOTOROLA">Motorola (Alerta NFC / Termistor en Tapa Intermedia)</option>
+                  <option value="SAMSUNG">Samsung Serie A / S (Alerta Sub-placa OVP &amp; Flex UB/U)</option>
+                  <option value="IPHONE">Apple iPhone (Alerta TrueTone / FaceID / Tornillos Long-Screw)</option>
+                  <option value="XIAOMI">Xiaomi / Redmi (Alerta Sensor Proximidad Ultrasónico / Goma)</option>
+                </select>
+              </div>
+              <div>
+                <label class="field-label" for="quoteModelInput">Modelo Exacto del Cliente:</label>
+                <input type="text" id="quoteModelInput" value="Moto G52 / Samsung A12" />
+              </div>
+            </div>
+
+            <div class="grid-2" style="grid-template-columns: 1fr 1fr 1fr; gap:0.75rem;">
+              <div>
+                <label class="field-label" for="quotePartUsd">Costo Repuesto (USD):</label>
+                <input type="number" id="quotePartUsd" value="22" min="0" step="0.5" />
+              </div>
+              <div>
+                <label class="field-label" for="quoteLaborUsd">Mano de Obra + Riesgo (USD):</label>
+                <input type="number" id="quoteLaborUsd" value="18" min="0" step="0.5" />
+              </div>
+              <div>
+                <label class="field-label" for="quoteFxRate">Tipo de Cambio (ARS/Local):</label>
+                <input type="number" id="quoteFxRate" value="1250" min="1" step="10" />
+              </div>
+            </div>
+
+            <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap:0.75rem; margin-top: 0.35rem;">
+              <div class="metric-card">
+                <div style="font-size:0.74rem; color:var(--text-secondary); font-family:var(--font-mono);">TOTAL COTIZADO (USD)</div>
+                <div class="metric-val" id="quoteTotalUsdDisplay">$40.00 USD</div>
+              </div>
+              <div class="metric-card">
+                <div style="font-size:0.74rem; color:var(--text-secondary); font-family:var(--font-mono);">TOTAL MONEDA LOCAL</div>
+                <div class="metric-val" id="quoteTotalLocalDisplay">$50,000</div>
+              </div>
+            </div>
+
+            <div id="quoteTechnicalSummary" class="msg msg-ai" style="font-family:var(--font-mono); font-size:0.78rem;"></div>
+          </div>
+        </div>
+
+        <!-- Right: Mandatory Verifiable Anti-Forgetfulness Checklist -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">✅ Checklist Verificable Anti-Olvido (Bloqueo Pre-Cierre)</div>
+            <span class="pill pill-amber" id="checklistStatusPill">PENDIENTE DE VERIFICACIÓN</span>
+          </div>
+
+          <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.65rem;">
+            Protocolo obligatorio antes de pegar tapa o sellar tornillería. Previene garantías por olvido de goma de sensor de proximidad, circuito NFC/termistor abierto en Motorola o líneas FPC sin caída de tensión validada.
+          </p>
+
+          <div class="progress-track">
+            <div class="progress-fill" id="checklistProgressBar"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:0.74rem; color:var(--text-secondary); margin-bottom:0.85rem;">
+            <span id="checklistCounterText">0 / 0 puntos críticos verificados</span>
+            <button class="btn" id="btnCheckAllDemo" type="button" style="padding:0.2rem 0.55rem; font-size:0.7rem;">⚡ Marcar Todos (Prueba)</button>
+          </div>
+
+          <div id="checklistContainer"></div>
+
+          <button class="btn btn-primary" id="btnSealOrder" type="button" disabled style="width:100%; margin-top:0.75rem; opacity:0.5; cursor:not-allowed;">
+            🔒 Bloqueado: Completa el 100% del Checklist para Emitir Orden de Cierre
+          </button>
+          <div id="sealAuditResult" style="margin-top:0.65rem; font-family:var(--font-mono); font-size:0.76rem; color:var(--accent-emerald);"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- TAB 4: CONTROL MOSTRADOR ZERO-TRUST & DISTRIBUIDOR                 -->
+    <!-- ================================================================== -->
+    <section id="tab-zerotrust" class="tab-pane">
+
+      <!-- Top Metrics Row -->
+      <div class="grid-3" style="margin-bottom: 1.15rem;">
+        <div class="metric-card">
+          <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-secondary);">ESTADO DE CAJA MOSTRADOR (ZERO-TRUST)</div>
+          <div class="metric-val" id="ztCashStatus">PRECINTO ACTIVO • $1,480.00 USD</div>
+          <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:0.25rem;">Conciliación contra retiros de Cajas Físicas</div>
+        </div>
+        <div class="metric-card">
+          <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-secondary);">STOCK AUDITADO EN CAJAS FÍSICAS</div>
+          <div class="metric-val" id="ztTotalUnits">65 UNIDADES (4 CAJAS)</div>
+          <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:0.25rem;">Ej: Caja #20 &rarr; 10 Módulos con firma SHA-256</div>
+        </div>
+        <div class="metric-card">
+          <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-secondary);">ÚLTIMA AUDITORÍA HORA ATÓMICA</div>
+          <div class="metric-val" id="ztLastAtomicStamp" style="font-size:1.05rem;">2026-10-26T23:30:48Z</div>
+          <div style="font-size:0.72rem; color:var(--accent-emerald); margin-top:0.25rem;" id="ztLastHash">HASH: 9f84c2e1...a40b</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+
+        <!-- Left: Physical Boxes Audit Matrix -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">📦 Stock en Cajas Físicas con Auditoría por Hora Atómica</div>
+            <span class="pill pill-emerald">ANTI-ROBO HORMIGA</span>
+          </div>
+
+          <table class="tactical-table" style="margin-bottom: 0.95rem;">
+            <thead>
+              <tr>
+                <th>Caja Física</th>
+                <th>Contenido / SKU</th>
+                <th>Stock</th>
+                <th>Hora Atómica (Timestamp)</th>
+                <th>Acción Auditada</th>
+              </tr>
+            </thead>
+            <tbody id="physicalBoxesTableBody"></tbody>
+          </table>
+
+          <div style="font-family:var(--font-mono); font-size:0.76rem; color:var(--accent-emerald); margin-bottom:0.4rem;">
+            📜 REGISTRO INMUTABLE DE MOVIMIENTOS (HORA ATÓMICA + HASH):
+          </div>
+          <div id="atomicAuditLog" class="chat-log" style="height: 165px; margin-bottom:0;"></div>
+        </div>
+
+        <!-- Right: Dynamic Replacement-Cost & FX Calculator -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">📈 Calculadora de Precio Dinámico por Costo de Reposición y Dólar</div>
+            <span class="pill pill-amber">PROTECCIÓN DE CAPITAL</span>
+          </div>
+
+          <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.85rem;">
+            En economías volátiles o ante escasez de ICs/Módulos, vender basándose en el costo histórico descapitaliza al distribuidor. Esta calculadora ajusta automáticamente el precio de mostrador según el <strong>Nuevo Costo de Reposición del Proveedor</strong> y el <strong>Dólar de Reposición</strong>.
+          </p>
+
+          <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap:0.75rem; margin-bottom:0.85rem;">
+            <div>
+              <label class="field-label" for="fxSkuSelect">SKU / Caja de Referencia:</label>
+              <select id="fxSkuSelect">
+                <option value="24.00">Caja #20 — Módulo Samsung A12 / A32 5G Original ($24 USD)</option>
+                <option value="19.50">Caja #14 — Módulo Samsung A03 / A03S / A02S ($19.50 USD)</option>
+                <option value="32.00">Caja #08 — Display iPhone 11 / XR Incell IC Trasplantable ($32 USD)</option>
+                <option value="8.50">Caja #31 — Pack PMIC S2MU106X01 + IF-PMIC ($8.50 USD)</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" for="fxHistoricalCostUsd">Costo Histórico de Compra (USD):</label>
+              <input type="number" id="fxHistoricalCostUsd" value="24.00" min="0.5" step="0.5" />
+            </div>
+            <div>
+              <label class="field-label" for="fxReplacementCostUsd">Nuevo Costo de Reposición Proveedor (USD):</label>
+              <input type="number" id="fxReplacementCostUsd" value="28.50" min="0.5" step="0.5" />
+            </div>
+            <div>
+              <label class="field-label" for="fxTargetMarginPct">Margen Neto Protegido (%):</label>
+              <input type="number" id="fxTargetMarginPct" value="35" min="5" max="200" step="1" />
+            </div>
+            <div>
+              <label class="field-label" for="fxBaseDollar">Dólar Base Anterior (Local/USD):</label>
+              <input type="number" id="fxBaseDollar" value="1200" min="1" step="10" />
+            </div>
+            <div>
+              <label class="field-label" for="fxReplacementDollar">Dólar de Reposición Hoy (Local/USD):</label>
+              <input type="number" id="fxReplacementDollar" value="1310" min="1" step="10" />
+            </div>
+          </div>
+
+          <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap:0.75rem; margin-bottom:0.85rem;">
+            <div class="metric-card">
+              <div style="font-size:0.72rem; color:var(--text-secondary); font-family:var(--font-mono);">PRECIO VENTA PROTEGIDO (USD)</div>
+              <div class="metric-val" id="fxProtectedUsdPrice">$38.48 USD</div>
+              <div id="fxDeltaUsdNote" style="font-size:0.7rem; color:var(--accent-amber); margin-top:0.2rem;"></div>
+            </div>
+            <div class="metric-card">
+              <div style="font-size:0.72rem; color:var(--text-secondary); font-family:var(--font-mono);">PRECIO MOSTRADOR AJUSTADO (LOCAL)</div>
+              <div class="metric-val" id="fxProtectedLocalPrice">$50,409</div>
+              <div id="fxLossWarningNote" style="font-size:0.7rem; color:var(--accent-emerald); margin-top:0.2rem;"></div>
+            </div>
+          </div>
+
+          <div id="fxAlertBox" class="msg msg-ai" style="font-family:var(--font-mono); font-size:0.77rem;"></div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
