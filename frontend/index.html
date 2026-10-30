@@ -748,13 +748,13 @@
       🔬 Lab Visión Dual (Sin Bloqueo USB)
     </button>
     <button class="tab-btn" data-tab="tab-compat" role="tab" aria-selected="false">
-      🔍 Compatibilidad Avanzada (Módulos, Flex &amp; ICs)
+      🔄 Compatibilidad &amp; Desarme (Módulos, Placas, Flex, ICs y Accesorios)
     </button>
     <button class="tab-btn" data-tab="tab-quoter" role="tab" aria-selected="false">
-      ⚡ Cotizador Express &amp; Checklist Verificable Anti-Olvido
+      ⚡ Cotizador Express (Mano de Obra + Repuesto) &amp; Checklist Verificable Anti-Olvido
     </button>
     <button class="tab-btn" data-tab="tab-zerotrust" role="tab" aria-selected="false">
-      🛡️ Control Mostrador Zero-Trust &amp; Distribuidor
+      🛡️ Mostrador Zero-Trust, Mayorista &amp; Distribuidor (Conexión n8n Oracle Cloud)
     </button>
   </nav>
 
@@ -900,6 +900,47 @@
                 Evita el error <code>v4l2: Device or resource busy</code> en Ubuntu: el backend Python jamás toca <code>/dev/video*</code>. El navegador extrae el fotograma actual directamente desde el buffer de video activo en memoria RAM.
               </p>
 
+              <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 0.75rem;">
+                <div>
+                  <label class="field-label" for="boardSelect">
+                    SELECTOR DE PLACA GROUND TRUTH (META AGENTES 102):
+                  </label>
+                  <select id="boardSelect" name="boardSelect">
+                    <option value="iphone-11-pro-820-01523-a" selected>
+                      🍎 iPhone 11 Pro (820-01523-A // SoC A13 Bionic)
+                    </option>
+                    <option value="samsung-sm-a325m">
+                      📱 Samsung Galaxy A32 (SM-A325M // FPC HDC6000 78p)
+                    </option>
+                    <option value="samsung-sm-a107m">
+                      📱 Samsung Galaxy A10s (SM-A107M // FPC CON5001 34p)
+                    </option>
+                    <option value="auto">
+                      🔍 Detección Automática Multimodal
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label" for="assistantModeSelect">
+                    ENRUTADOR DE INTENCIÓN ESTILO N8N (MODO DEL ASISTENTE):
+                  </label>
+                  <select id="assistantModeSelect" name="assistantModeSelect">
+                    <option value="concise" selected>
+                      ⚡ Asistente Conciso (Responde solo lo preguntado — Sin relleno)
+                    </option>
+                    <option value="pin_log">
+                      📌 Modo Mapeo de Pines (Guarda valor del Tester + Pin en la Tabla)
+                    </option>
+                    <option value="cross_schematic">
+                      🔍 Cruzar Pines Guardados con Esquemático (Ground Truth)
+                    </option>
+                    <option value="full_guide">
+                      🛠️ Diagnóstico Completo + Guía de Microsoldadura
+                    </option>
+                  </select>
+                </div>
+              </div>
+
               <div style="margin-bottom: 0.75rem;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.38rem;">
                   <label class="field-label" for="symptomInput" style="margin-bottom:0;">
@@ -934,33 +975,119 @@
                 🎯 OBJETIVO DE AUDITORÍA ACTIVO: [ VISOR A + VISOR B ] — Envío dual habilitado.
               </div>
 
-              <button class="btn btn-primary" id="btnCaptureDiagnose" type="button" style="width: 100%; padding: 0.9rem; font-size: 0.92rem;">
+              <button class="btn btn-primary" id="btnCaptureDiagnose" type="button" style="width: 100%; padding: 0.9rem; font-size: 0.92rem; margin-bottom: 0.5rem;">
                 📸 Capturar Fotograma Instantáneo (Sin cortar video) y Diagnosticar
               </button>
+
+              <button class="btn" id="btnAutoLogPinAi" type="button" style="width: 100%; padding: 0.72rem; font-size: 0.84rem; margin-bottom: 0.6rem; border-color: var(--accent-emerald); color: var(--accent-emerald); background: rgba(0, 255, 136, 0.1);">
+                📌 Capturar y Auto-Guardar Medición en Tabla (100% Automático por IA)
+              </button>
+
+              <!-- Temporizador Manos Libres con Beep Sonoro Web Audio API -->
+              <div style="display:flex; flex-wrap:wrap; gap:0.55rem; align-items:center;">
+                <button class="btn" id="btnTimer10s" type="button" style="flex:1; min-width:210px; border-color:var(--accent-amber); color:#fcd34d;">
+                  ⏱️ Capturar en 10s (Manos en Tester)
+                </button>
+                <button class="btn" id="btnTimer20s" type="button" style="flex:1; min-width:210px; border-color:var(--accent-cyan); color:var(--accent-cyan);">
+                  ⏱️ Capturar en 20s (Medición Precisa)
+                </button>
+                <span class="pill pill-amber" id="handsFreeCountdownBadge" style="display:none; font-size:0.88rem; font-weight:700; padding:0.45rem 0.85rem;">
+                  ⏱️ CAPTURA EN: --s
+                </span>
+              </div>
             </div>
 
             <div>
-              <label class="field-label">VISTA PREVIA DE FOTOGRAMAS EXTRAÍDOS EN MEMORIA RAM:</label>
+              <label class="field-label">VISTA PREVIA DE FOTOGRAMAS + OVERLAY SAM 3.1 (CLIC PARA ZOOM COMPLETO):</label>
               <div class="snap-grid" style="margin-top: 0;">
                 <div class="snap-box">
                   <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--accent-emerald); margin-bottom:0.35rem;">
-                    FRAME VISOR A (MICROSCOPIO)
+                    🔍 FRAME VISOR A + SAM 3.1 (CLIC = ZOOM)
                   </div>
-                  <img id="snapPreviewA" alt="Captura Visor A" style="height: 155px;" />
+                  <div style="position:relative; width:100%; height:155px; background:#060809; border-radius:4px; overflow:hidden; border:1px solid #1f2937;">
+                    <img id="snapPreviewA" alt="Captura Visor A" style="width:100%; height:155px; object-fit:cover; display:none; cursor:zoom-in;" title="Clic para ampliar Captura Visor A" />
+                    <canvas id="previewCanvasA" width="640" height="360" style="width:100%; height:155px; object-fit:cover; display:block; cursor:zoom-in;" title="Clic para ampliar Captura Visor A con Bounding Boxes SAM 3.1"></canvas>
+                  </div>
                   <div id="snapMetaA" style="font-family:var(--font-mono); font-size:0.7rem; color:var(--text-secondary); margin-top:0.3rem;">
                     Sin captura previa
                   </div>
                 </div>
                 <div class="snap-box">
                   <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--accent-cyan); margin-bottom:0.35rem;">
-                    FRAME VISOR B (CENITAL / TESTER)
+                    🔍 FRAME VISOR B / TESTER (CLIC = ZOOM)
                   </div>
-                  <img id="snapPreviewB" alt="Captura Visor B" style="height: 155px;" />
+                  <img id="snapPreviewB" alt="Captura Visor B" style="height: 155px; cursor:zoom-in;" title="Clic para ampliar Captura Visor B (Tester)" />
                   <div id="snapMetaB" style="font-family:var(--font-mono); font-size:0.7rem; color:var(--text-secondary); margin-top:0.3rem;">
                     Sin captura previa
                   </div>
                 </div>
               </div>
+
+              <!-- Bloque Visual de Auditoría Determinista Meta Agentes 102 -->
+              <div id="deterministicAuditPanel" style="margin-top:0.75rem; padding:0.7rem 0.85rem; border-radius:6px; border:1px solid rgba(0, 255, 136, 0.4); background:rgba(0, 255, 136, 0.06); font-family:var(--font-mono); font-size:0.74rem; color:var(--text-primary);">
+                <div style="color:var(--accent-emerald); font-weight:700; margin-bottom:0.25rem;">
+                  🛡️ AUDITORÍA DETERMINISTA (META AGENTES 102 — GROUND TRUTH READY)
+                </div>
+                <div id="deterministicAuditBody" style="color:var(--text-secondary);">
+                  Placa activa: 🍎 iPhone 11 Pro (820-01523-A) | Restricción: Cautín Punta Fina Limada + Flux Aguja OK (Sin Aire Caliente).
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel de Sesión de Mapeo de Componentes y Pines 100% Automático por IA (Exportable a .MD) -->
+          <div id="pinSessionBox" style="margin-top: 1.05rem; padding-top: 0.95rem; border-top: 1px solid var(--border-tactical);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:0.65rem;">
+              <div class="panel-title" style="font-size:0.84rem;">
+                📌 Tabla de Mapeo de Componentes y Pines 100% Automática por IA (Sin Carga Manual • Exportable a .MD)
+              </div>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <span class="pill pill-emerald" id="aiAutoLoadFlashBadge" style="display:none; font-weight:700;">
+                  🤖 Cargado automáticamente por IA
+                </span>
+                <span class="pill pill-emerald" id="pinSessionCountBadge">0 MEDICIONES IA</span>
+              </div>
+            </div>
+
+            <div id="aiAutoPinNotice" style="margin-bottom:0.65rem; padding:0.55rem 0.85rem; border-radius:6px; border:1px solid rgba(0, 255, 136, 0.35); background:rgba(0, 255, 136, 0.07); font-family:var(--font-mono); font-size:0.75rem; color:var(--text-primary);">
+              🤖 <strong style="color:var(--accent-emerald);">MODO 100% AUTOMÁTICO POR IA (CERO TIPEO MANUAL):</strong> Al realizar cualquier captura (o presionar <em>"📌 Capturar y Auto-Guardar Medición en Tabla"</em>), la IA identifica el componente/conector/pin en el Visor A y la lectura del Tester en el Visor B, insertando la fila automáticamente abajo. Podés eliminar cualquier fila con <strong>🗑️ Borrar</strong>.
+            </div>
+
+            <div style="overflow-x:auto; margin-bottom:0.75rem;">
+              <table class="tactical-table" id="pinSessionTable">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Placa</th>
+                    <th>Componente / Tipo</th>
+                    <th>Conector / Zona</th>
+                    <th>Pin / Línea</th>
+                    <th>Función Tester</th>
+                    <th>Valor Medido</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="pinSessionTableBody">
+                  <tr>
+                    <td colspan="9" style="text-align:center; color:var(--text-secondary);">
+                      Sin mediciones en la sesión actual. Presioná "📸 Capturar" o "📌 Capturar y Auto-Guardar Medición en Tabla" para que la IA inserte los valores automáticamente.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="control-row">
+              <button class="btn btn-primary" id="btnCrossSchematicPins" type="button">
+                🔍 Cruzar Tabla con Esquemático (IA + Ground Truth)
+              </button>
+              <button class="btn" id="btnExportPinsMarkdown" type="button" style="border-color:var(--accent-cyan); color:var(--accent-cyan);">
+                📥 Descargar Mapeo en Markdown (.md)
+              </button>
+              <button class="btn btn-danger" id="btnClearPinSession" type="button">
+                🗑️ Limpiar Sesión de Pines
+              </button>
             </div>
           </div>
         </div>
@@ -991,39 +1118,57 @@ Seleccioná qué visor(es) incluir con los checkboxes de arriba, usá "🎙️ D
     </section>
 
     <!-- ================================================================== -->
-    <!-- TAB 2: COMPATIBILIDAD AVANZADA (MÓDULOS, FLEX & ICS)               -->
+    <!-- TAB 2: COMPATIBILIDAD & DESARME (MÓDULOS, PLACAS, FLEX, ICS)       -->
     <!-- ================================================================== -->
     <section id="tab-compat" class="tab-pane">
       <div class="panel" style="margin-bottom: 1.15rem;">
         <div class="panel-header">
-          <div class="panel-title">🔍 Buscador Cruzado de Módulos, Alertas de Flex FPC / IC Táctil e ICs Donantes</div>
+          <div class="panel-title">🔄 Buscador Cruzado de Compatibilidad, Placas de Desarme (Scrap), Módulos, Flex FPC e ICs</div>
           <span class="pill pill-emerald" id="compatCountBadge">Cargando registros...</span>
         </div>
 
         <div class="grid-2">
           <div>
-            <label class="field-label" for="compatSearchInput">Buscar por modelo, código de flex, controlador Touch (BOE, Tianma, Synaptics, Novatek) o código IC (PMIC / IF-PMIC):</label>
-            <input type="text" id="compatSearchInput" placeholder="Ej: A12, A03, iPhone 11, Novatek, Synaptics, BOE, Tianma, S2MU106X01, PM6150..." />
+            <label class="field-label" for="compatSearchInput">Buscar por modelo, placa donante, código FPC, controlador Touch (BOE, Tianma, Synaptics, Novatek) o IC (SM5714, MT6357CRV, Tigris, Hydra):</label>
+            <input type="text" id="compatSearchInput" placeholder="Ej: A32, A10s, iPhone 11 Pro, SM5714, MT6357CRV, Tigris, Hydra, HDC6000, CON5001, Cargador..." />
           </div>
           <div>
-            <label class="field-label" for="compatCategorySelect">Filtrar por Categoría Técnica:</label>
+            <label class="field-label" for="compatCategorySelect">Filtrar por Categoría Comercial / Laboratorio:</label>
             <select id="compatCategorySelect">
-              <option value="ALL">Todas las Categorías (Módulos + Flex/Remanufactura + ICs Donantes)</option>
-              <option value="MODULE">📱 Compatibilidad de Módulos de Pantalla</option>
+              <option value="ALL">Todas las Categorías (Módulos + Placas Desarme + Flex + ICs + Accesorios)</option>
+              <option value="MODULE">📱 Módulos de Pantalla (Minorista vs Mayorista / Gremio)</option>
+              <option value="BOARD_SCRAP">🧩 Placas de Desarme (Scrap) &amp; Rentabilidad Desarme vs Compra</option>
               <option value="FLEX_REMAN">⚠️ Alertas de Remanufactura, Versión de Flex FPC &amp; IC Touch</option>
-              <option value="IC_DONOR">🔬 Compatibilidad Cruzada de ICs (PMIC / IF-PMIC / Carga)</option>
+              <option value="IC_DONOR">🔬 Compatibilidad Cruzada de ICs (PMIC / IF-PMIC / Tigris / Hydra)</option>
+              <option value="ACCESSORY">🔌 Accesorios &amp; Baterías Certificadas (Mostrador / Mayorista)</option>
             </select>
           </div>
         </div>
 
         <div class="chip-bar" id="compatQuickChips">
           <button class="chip active" data-query="">Ver Todo</button>
-          <button class="chip" data-query="A12">Samsung A12 / A02 / A32 5G</button>
-          <button class="chip" data-query="A03">Samsung A03 / A03S / A02S</button>
-          <button class="chip" data-query="iPhone 11">iPhone 11 / XR</button>
-          <button class="chip" data-query="BOE">Panel BOE / Tianma</button>
-          <button class="chip" data-query="Synaptics">IC Synaptics / Novatek</button>
-          <button class="chip" data-query="PMIC">Donantes PMIC / IF-PMIC</button>
+          <button class="chip" data-query="SM5714">IC SM5714 / MT6358VW (A32)</button>
+          <button class="chip" data-query="MT6357CRV">IC MT6357CRV / CON5001 (A10s)</button>
+          <button class="chip" data-query="Tigris">Tigris U3300 / Hydra U6300 (iPhone 11 Pro)</button>
+          <button class="chip" data-query="Desarme">Placas de Desarme (Scrap)</button>
+          <button class="chip" data-query="A12">Samsung A12 / A02 / A32</button>
+          <button class="chip" data-query="BOE">Panel BOE / Tianma / Synaptics</button>
+        </div>
+
+        <!-- Asistente IA de Compatibilidad Cruzada y Desarme (Conectado a Ground Truth) -->
+        <div style="margin-top:0.95rem; padding-top:0.85rem; border-top:1px solid var(--border-tactical);">
+          <label class="field-label" for="compatAiQueryInput">
+            🤖 CONSULTA RÁPIDA A LA IA SOBRE COMPATIBILIDAD DE ICS, CONECTORES FPC Y RENTABILIDAD DE DESARME (GROUND TRUTH):
+          </label>
+          <div class="control-row" style="margin-bottom:0.55rem;">
+            <input type="text" id="compatAiQueryInput" value="¿Qué equipos comparten el IF-PMIC SM5714 o el conector HDC6000 de 78 pines y cuándo conviene extraerlo de placa de desarme?" style="flex:1; min-width:260px;" />
+            <button class="btn btn-primary" id="btnCompatAiAsk" type="button">
+              🤖 Consultar Compatibilidad IA (Ground Truth)
+            </button>
+          </div>
+          <div id="compatAiAnswerBox" class="msg msg-ai" style="font-size:0.84rem; padding:0.75rem 1rem;">
+            💡 <strong>Base Ground Truth Activa:</strong> Consultá arriba qué modelos comparten ICs (ej. <code>SM5714</code>, <code>MT6357CRV</code>, <code>S2MU005X03</code>, <code>SN2611A0 Tigris</code>, <code>CBTL1612A1 Hydra</code>) o conectores FPC (<code>HDC6000 78p</code>, <code>CON5001 34p</code>, <code>J6400/J6500</code>) y si conviene recuperarlos de una placa donante en taller o comprar repuesto nuevo al por mayor.
+          </div>
         </div>
       </div>
 
@@ -1039,8 +1184,8 @@ Seleccioná qué visor(es) incluir con los checkboxes de arriba, usá "🎙️ D
         <!-- Left: Express Counter Quoter -->
         <div class="panel">
           <div class="panel-header">
-            <div class="panel-title">⚡ Cotizador Express de Mostrador y Laboratorio</div>
-            <span class="pill pill-emerald">CÁLCULO INSTANTÁNEO</span>
+            <div class="panel-title">⚡ Cotizador Express (Mano de Obra + Repuesto // Minorista &amp; Gremio)</div>
+            <span class="pill pill-emerald">USD + ARS EN VIVO</span>
           </div>
 
           <div style="display:flex; flex-direction:column; gap:0.85rem;">
@@ -1050,29 +1195,43 @@ Seleccioná qué visor(es) incluir con los checkboxes de arriba, usá "🎙️ D
                 <option value="MODULE_SWAP">📱 Cambio de Módulo de Pantalla (Incell / OLED / Original)</option>
                 <option value="CHARGING_PORT">🔌 Cambio de Pin de Carga / Sub-Placa Inferior</option>
                 <option value="GLASS_REMAN">💎 Remanufactura de Vidrio (Laminación OCA + Marco)</option>
-                <option value="MICROSOLDER">🔬 Microsoldadura PCB (Conector FPC / Reballing PMIC / Pistas)</option>
+                <option value="MICROSOLDER">🔬 Microsoldadura PCB (Conector FPC / Reballing PMIC / Pistas con Cautín)</option>
               </select>
             </div>
 
             <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap:0.75rem;">
               <div>
-                <label class="field-label" for="quoteBrandSelect">Marca / Arquitectura del Equipo (Reglas Específicas):</label>
+                <label class="field-label" for="quoteBrandSelect">Marca / Placa Ground Truth (Reglas Específicas):</label>
                 <select id="quoteBrandSelect">
+                  <option value="SAMSUNG">Samsung Serie A / S (A32 HDC6000 78p / A10s CON5001 34p / OVP)</option>
+                  <option value="IPHONE">Apple iPhone (11 Pro 820-01523-A / J6400-J6500 / FaceID / Long-Screw)</option>
                   <option value="MOTOROLA">Motorola (Alerta NFC / Termistor en Tapa Intermedia)</option>
-                  <option value="SAMSUNG">Samsung Serie A / S (Alerta Sub-placa OVP &amp; Flex UB/U)</option>
-                  <option value="IPHONE">Apple iPhone (Alerta TrueTone / FaceID / Tornillos Long-Screw)</option>
                   <option value="XIAOMI">Xiaomi / Redmi (Alerta Sensor Proximidad Ultrasónico / Goma)</option>
                 </select>
               </div>
               <div>
-                <label class="field-label" for="quoteModelInput">Modelo Exacto del Cliente:</label>
-                <input type="text" id="quoteModelInput" value="Moto G52 / Samsung A12" />
+                <label class="field-label" for="quoteModelInput">Modelo Exacto del Cliente / Taller:</label>
+                <input type="text" id="quoteModelInput" value="Samsung A32 (SM-A325M) / iPhone 11 Pro" />
+              </div>
+            </div>
+
+            <div class="grid-2" style="grid-template-columns: 1.3fr 0.7fr; gap:0.75rem;">
+              <div>
+                <label class="field-label" for="quoteClientTier">Lista de Precios / Tipo de Cliente:</label>
+                <select id="quoteClientTier">
+                  <option value="RETAIL" selected>👤 Cliente Mostrador (Minorista — Garantía Completa)</option>
+                  <option value="WHOLESALE">🤝 Gremio / Mayorista / Taller Colega (Margen Preferencial)</option>
+                </select>
+              </div>
+              <div>
+                <label class="field-label" for="quoteMarginPct">Margen sobre Repuesto (%):</label>
+                <input type="number" id="quoteMarginPct" value="35" min="0" max="200" step="5" />
               </div>
             </div>
 
             <div class="grid-2" style="grid-template-columns: 1fr 1fr 1fr; gap:0.75rem;">
               <div>
-                <label class="field-label" for="quotePartUsd">Costo Repuesto (USD):</label>
+                <label class="field-label" for="quotePartUsd">Costo Repuesto Base (USD):</label>
                 <input type="number" id="quotePartUsd" value="22" min="0" step="0.5" />
               </div>
               <div>
@@ -1080,19 +1239,23 @@ Seleccioná qué visor(es) incluir con los checkboxes de arriba, usá "🎙️ D
                 <input type="number" id="quoteLaborUsd" value="18" min="0" step="0.5" />
               </div>
               <div>
-                <label class="field-label" for="quoteFxRate">Tipo de Cambio (ARS/Local):</label>
+                <label class="field-label" for="quoteFxRate">Tipo de Cambio (ARS/USD):</label>
                 <input type="number" id="quoteFxRate" value="1250" min="1" step="10" />
               </div>
             </div>
 
-            <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap:0.75rem; margin-top: 0.35rem;">
+            <div class="grid-2" style="grid-template-columns: 1fr 1fr 1fr; gap:0.75rem; margin-top: 0.35rem;">
               <div class="metric-card">
-                <div style="font-size:0.74rem; color:var(--text-secondary); font-family:var(--font-mono);">TOTAL COTIZADO (USD)</div>
-                <div class="metric-val" id="quoteTotalUsdDisplay">$40.00 USD</div>
+                <div style="font-size:0.72rem; color:var(--text-secondary); font-family:var(--font-mono);">TOTAL ACTIVO (USD)</div>
+                <div class="metric-val" id="quoteTotalUsdDisplay">$47.70 USD</div>
               </div>
               <div class="metric-card">
-                <div style="font-size:0.74rem; color:var(--text-secondary); font-family:var(--font-mono);">TOTAL MONEDA LOCAL</div>
-                <div class="metric-val" id="quoteTotalLocalDisplay">$50,000</div>
+                <div style="font-size:0.72rem; color:var(--text-secondary); font-family:var(--font-mono);">PRECIO MOSTRADOR (MINORISTA)</div>
+                <div class="metric-val" id="quoteTotalLocalDisplay">$59,625</div>
+              </div>
+              <div class="metric-card">
+                <div style="font-size:0.72rem; color:var(--accent-cyan); font-family:var(--font-mono);">PRECIO GREMIO / MAYORISTA</div>
+                <div class="metric-val" id="quoteWholesaleLocalDisplay" style="color:var(--accent-cyan);">$49,400</div>
               </div>
             </div>
 
@@ -1103,12 +1266,12 @@ Seleccioná qué visor(es) incluir con los checkboxes de arriba, usá "🎙️ D
         <!-- Right: Mandatory Verifiable Anti-Forgetfulness Checklist -->
         <div class="panel">
           <div class="panel-header">
-            <div class="panel-title">✅ Checklist Verificable Anti-Olvido (Bloqueo Pre-Cierre)</div>
+            <div class="panel-title">✅ Checklist Verificable Anti-Olvido (Meta Agentes 102 + Ground Truth)</div>
             <span class="pill pill-amber" id="checklistStatusPill">PENDIENTE DE VERIFICACIÓN</span>
           </div>
 
           <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.65rem;">
-            Protocolo obligatorio antes de pegar tapa o sellar tornillería. Previene garantías por olvido de goma de sensor de proximidad, circuito NFC/termistor abierto en Motorola o líneas FPC sin caída de tensión validada.
+            Protocolo determinista obligatorio antes de pegar tapa o sellar tornillería. Incluye validaciones del <code>ground_truth/boards_ground_truth_bundle.json</code> (modo diodo en conectores FPC, uso exclusivo de cautín punta fina sin aire caliente, goma de sensor de proximidad y antena NFC/termistor).
           </p>
 
           <div class="progress-track">
@@ -1131,35 +1294,35 @@ Seleccioná qué visor(es) incluir con los checkboxes de arriba, usá "🎙️ D
     </section>
 
     <!-- ================================================================== -->
-    <!-- TAB 4: CONTROL MOSTRADOR ZERO-TRUST & DISTRIBUIDOR                 -->
+    <!-- TAB 4: MOSTRADOR ZERO-TRUST, MAYORISTA & DISTRIBUIDOR (N8N)        -->
     <!-- ================================================================== -->
     <section id="tab-zerotrust" class="tab-pane">
 
       <!-- Top Metrics Row -->
       <div class="grid-3" style="margin-bottom: 1.15rem;">
         <div class="metric-card">
-          <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-secondary);">ESTADO DE CAJA MOSTRADOR (ZERO-TRUST)</div>
+          <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-secondary);">ESTADO DE CAJA MOSTRADOR &amp; MAYORISTA (ZERO-TRUST)</div>
           <div class="metric-val" id="ztCashStatus">PRECINTO ACTIVO • $1,480.00 USD</div>
-          <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:0.25rem;">Conciliación contra retiros de Cajas Físicas</div>
+          <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:0.25rem;">Conciliación Minorista + Gremio contra Cajas Físicas</div>
         </div>
         <div class="metric-card">
-          <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-secondary);">STOCK AUDITADO EN CAJAS FÍSICAS</div>
-          <div class="metric-val" id="ztTotalUnits">65 UNIDADES (4 CAJAS)</div>
-          <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:0.25rem;">Ej: Caja #20 &rarr; 10 Módulos con firma SHA-256</div>
+          <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-secondary);">STOCK AUDITADO EN CAJAS FÍSICAS (ANTI-ROBO HORMIGA)</div>
+          <div class="metric-val" id="ztTotalUnits">112 UNIDADES (6 CAJAS)</div>
+          <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:0.25rem;">Módulos, Placas de Desarme, ICs, Cargadores y Baterías</div>
         </div>
         <div class="metric-card">
-          <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-secondary);">ÚLTIMA AUDITORÍA HORA ATÓMICA</div>
+          <div style="font-family:var(--font-mono); font-size:0.74rem; color:var(--text-secondary);">ÚLTIMA AUDITORÍA HORA ATÓMICA + HMAC-SHA256</div>
           <div class="metric-val" id="ztLastAtomicStamp" style="font-size:1.05rem;">2026-10-26T23:30:48Z</div>
           <div style="font-size:0.72rem; color:var(--accent-emerald); margin-top:0.25rem;" id="ztLastHash">HASH: 9f84c2e1...a40b</div>
         </div>
       </div>
 
-      <div class="grid-2">
+      <div class="grid-2" style="margin-bottom: 1.15rem;">
 
         <!-- Left: Physical Boxes Audit Matrix -->
         <div class="panel">
           <div class="panel-header">
-            <div class="panel-title">📦 Stock en Cajas Físicas con Auditoría por Hora Atómica</div>
+            <div class="panel-title">📦 Stock en Cajas Físicas (Módulos, Placas Desarme, ICs, Cargadores, Baterías)</div>
             <span class="pill pill-emerald">ANTI-ROBO HORMIGA</span>
           </div>
 
@@ -1167,7 +1330,7 @@ Seleccioná qué visor(es) incluir con los checkboxes de arriba, usá "🎙️ D
             <thead>
               <tr>
                 <th>Caja Física</th>
-                <th>Contenido / SKU</th>
+                <th>Contenido / SKU (Minorista &amp; Mayorista)</th>
                 <th>Stock</th>
                 <th>Hora Atómica (Timestamp)</th>
                 <th>Acción Auditada</th>
@@ -1177,30 +1340,32 @@ Seleccioná qué visor(es) incluir con los checkboxes de arriba, usá "🎙️ D
           </table>
 
           <div style="font-family:var(--font-mono); font-size:0.76rem; color:var(--accent-emerald); margin-bottom:0.4rem;">
-            📜 REGISTRO INMUTABLE DE MOVIMIENTOS (HORA ATÓMICA + HASH):
+            📜 REGISTRO INMUTABLE DE MOVIMIENTOS (HORA ATÓMICA + HASH SHA-256):
           </div>
           <div id="atomicAuditLog" class="chat-log" style="height: 165px; margin-bottom:0;"></div>
         </div>
 
-        <!-- Right: Dynamic Replacement-Cost & FX Calculator -->
+        <!-- Right: Dynamic Replacement-Cost & FX Calculator (Retail + Wholesale) -->
         <div class="panel">
           <div class="panel-header">
-            <div class="panel-title">📈 Calculadora de Precio Dinámico por Costo de Reposición y Dólar</div>
+            <div class="panel-title">📈 Calculadora de Precio Dinámico por Costo de Reposición (Minorista y Mayorista)</div>
             <span class="pill pill-amber">PROTECCIÓN DE CAPITAL</span>
           </div>
 
           <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.85rem;">
-            En economías volátiles o ante escasez de ICs/Módulos, vender basándose en el costo histórico descapitaliza al distribuidor. Esta calculadora ajusta automáticamente el precio de mostrador según el <strong>Nuevo Costo de Reposición del Proveedor</strong> y el <strong>Dólar de Reposición</strong>.
+            Vender basándose en el costo histórico descapitaliza al local/distribuidor. Esta calculadora recalcula en vivo el <strong>Precio Mostrador (Minorista)</strong> y el <strong>Precio Gremio (Mayorista)</strong> según el <strong>Nuevo Costo de Reposición del Proveedor</strong> y el <strong>Dólar de Reposición</strong>.
           </p>
 
           <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap:0.75rem; margin-bottom:0.85rem;">
             <div>
-              <label class="field-label" for="fxSkuSelect">SKU / Caja de Referencia:</label>
+              <label class="field-label" for="fxSkuSelect">SKU / Caja Física de Referencia:</label>
               <select id="fxSkuSelect">
-                <option value="24.00">Caja #20 — Módulo Samsung A12 / A32 5G Original ($24 USD)</option>
-                <option value="19.50">Caja #14 — Módulo Samsung A03 / A03S / A02S ($19.50 USD)</option>
-                <option value="32.00">Caja #08 — Display iPhone 11 / XR Incell IC Trasplantable ($32 USD)</option>
-                <option value="8.50">Caja #31 — Pack PMIC S2MU106X01 + IF-PMIC ($8.50 USD)</option>
+                <option value="24.00">Caja #20 — Módulo Samsung A12 / A32 Original ($24 USD)</option>
+                <option value="19.50">Caja #14 — Módulo Samsung A03 / A03S / A10s ($19.50 USD)</option>
+                <option value="32.00">Caja #08 — Display iPhone 11 / 11 Pro OLED ($32 USD)</option>
+                <option value="8.50">Caja #31 — Pack ICs SM5714 + MT6357CRV + Tigris ($8.50 USD)</option>
+                <option value="14.00">Caja #42 — Lote Placas Donantes Desarme Originales ($14 USD)</option>
+                <option value="9.00">Caja #55 — Kit Cargadores 25W PD + Cables + Baterías OEM ($9 USD)</option>
               </select>
             </div>
             <div>
@@ -1212,29 +1377,34 @@ Seleccioná qué visor(es) incluir con los checkboxes de arriba, usá "🎙️ D
               <input type="number" id="fxReplacementCostUsd" value="28.50" min="0.5" step="0.5" />
             </div>
             <div>
-              <label class="field-label" for="fxTargetMarginPct">Margen Neto Protegido (%):</label>
+              <label class="field-label" for="fxTargetMarginPct">Margen Minorista (%) [Gremio = -15%]:</label>
               <input type="number" id="fxTargetMarginPct" value="35" min="5" max="200" step="1" />
             </div>
             <div>
-              <label class="field-label" for="fxBaseDollar">Dólar Base Anterior (Local/USD):</label>
+              <label class="field-label" for="fxBaseDollar">Dólar Base Anterior (ARS/USD):</label>
               <input type="number" id="fxBaseDollar" value="1200" min="1" step="10" />
             </div>
             <div>
-              <label class="field-label" for="fxReplacementDollar">Dólar de Reposición Hoy (Local/USD):</label>
+              <label class="field-label" for="fxReplacementDollar">Dólar de Reposición Hoy (ARS/USD):</label>
               <input type="number" id="fxReplacementDollar" value="1310" min="1" step="10" />
             </div>
           </div>
 
-          <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap:0.75rem; margin-bottom:0.85rem;">
+          <div class="grid-2" style="grid-template-columns: 1fr 1fr 1fr; gap:0.65rem; margin-bottom:0.85rem;">
             <div class="metric-card">
-              <div style="font-size:0.72rem; color:var(--text-secondary); font-family:var(--font-mono);">PRECIO VENTA PROTEGIDO (USD)</div>
-              <div class="metric-val" id="fxProtectedUsdPrice">$38.48 USD</div>
-              <div id="fxDeltaUsdNote" style="font-size:0.7rem; color:var(--accent-amber); margin-top:0.2rem;"></div>
+              <div style="font-size:0.7rem; color:var(--text-secondary); font-family:var(--font-mono);">PRECIO REPOSICIÓN (USD)</div>
+              <div class="metric-val" id="fxProtectedUsdPrice" style="font-size:1.15rem;">$38.48 USD</div>
+              <div id="fxDeltaUsdNote" style="font-size:0.68rem; color:var(--accent-amber); margin-top:0.2rem;"></div>
             </div>
             <div class="metric-card">
-              <div style="font-size:0.72rem; color:var(--text-secondary); font-family:var(--font-mono);">PRECIO MOSTRADOR AJUSTADO (LOCAL)</div>
-              <div class="metric-val" id="fxProtectedLocalPrice">$50,409</div>
-              <div id="fxLossWarningNote" style="font-size:0.7rem; color:var(--accent-emerald); margin-top:0.2rem;"></div>
+              <div style="font-size:0.7rem; color:var(--text-secondary); font-family:var(--font-mono);">MINORISTA MOSTRADOR (ARS)</div>
+              <div class="metric-val" id="fxProtectedLocalPrice" style="font-size:1.15rem;">$50,409</div>
+              <div id="fxLossWarningNote" style="font-size:0.68rem; color:var(--accent-emerald); margin-top:0.2rem;"></div>
+            </div>
+            <div class="metric-card">
+              <div style="font-size:0.7rem; color:var(--accent-cyan); font-family:var(--font-mono);">MAYORISTA / GREMIO (ARS)</div>
+              <div class="metric-val" id="fxWholesaleLocalPrice" style="font-size:1.15rem; color:var(--accent-cyan);">$44,802</div>
+              <div style="font-size:0.68rem; color:var(--text-secondary); margin-top:0.2rem;">Lista Distribuidor Protegida</div>
             </div>
           </div>
 
@@ -1242,9 +1412,63 @@ Seleccioná qué visor(es) incluir con los checkboxes de arriba, usá "🎙️ D
         </div>
 
       </div>
+
+      <!-- Panel de Sincronización ERP Zero-Trust con Webhook n8n en Oracle Cloud (HMAC-SHA256) -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">☁️ Nodo de Sincronización ERP &amp; Mayorista con n8n en Oracle Cloud (Firma Criptográfica HMAC-SHA256)</div>
+          <span class="pill pill-emerald" id="n8nSyncStatusBadge">WEBHOOK HMAC-SHA256 LISTO</span>
+        </div>
+
+        <div class="grid-2" style="align-items: start;">
+          <div>
+            <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:0.75rem;">
+              Conecta el mostrador físico y el depósito mayorista con los flujos automatizados de <strong>n8n en Oracle Cloud</strong> (actualización de listas de precios Minorista/Gremio en WhatsApp/Telegram, alertas de reposición de stock y auditoría anti-robo hormiga firmada con <code>HMAC-SHA256</code>).
+            </p>
+            <div style="margin-bottom:0.65rem;">
+              <label class="field-label" for="n8nWebhookUrlInput">Endpoint Webhook n8n (Oracle Cloud):</label>
+              <input type="text" id="n8nWebhookUrlInput" value="https://n8n.oraclecloud-circuitguard.example/webhook/zerotrust-erp-sync" />
+            </div>
+            <div style="margin-bottom:0.75rem;">
+              <label class="field-label" for="n8nSyncEventSelect">Evento de Sincronización ERP / Distribuidor:</label>
+              <select id="n8nSyncEventSelect">
+                <option value="ERP_STOCK_AND_PRICE_SYNC" selected>🔄 Sincronizar Stock Auditado + Lista Precios Minorista/Mayorista</option>
+                <option value="ANTI_SHRINKAGE_BOX_AUDIT">🛡️ Emitir Acta Criptográfica Anti-Robo Hormiga (6 Cajas Físicas)</option>
+                <option value="WHOLESALE_PRICE_BROADCAST">📢 Publicar Actualización de Lista Mayorista / Gremio por Costo Reposición</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" id="btnTriggerN8nSync" type="button" style="width:100%; padding:0.78rem;">
+              ☁️ Disparar Sincronización Firmada (HMAC-SHA256) a n8n Oracle Cloud
+            </button>
+          </div>
+
+          <div>
+            <label class="field-label">TELEMETRÍA DEL PAQUETE FIRMADO (PAYLOAD JSON + CABECERA X-CircuitGuard-Signature-256):</label>
+            <pre id="n8nSyncOutputPre" class="chat-log" style="height:210px; margin-bottom:0; font-size:0.74rem; white-space:pre-wrap;">Presioná "☁️ Disparar Sincronización Firmada" para generar el payload ERP Zero-Trust, calcular su firma HMAC-SHA256 en el backend (/api/n8n-erp-sync) y verificar el estado del envío.</pre>
+          </div>
+        </div>
+      </div>
+
     </section>
 
   </main>
+
+  <!-- Modal Lightbox de Zoom Táctico para Captura Visor A / Visor B -->
+  <div id="snapZoomModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(5, 7, 8, 0.92); align-items:center; justify-content:center; padding:1.5rem;">
+    <div style="max-width:1280px; width:100%; background:var(--bg-panel); border:1px solid var(--accent-emerald); border-radius:10px; padding:1rem; box-shadow:0 0 32px rgba(0, 255, 136, 0.25);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; border-bottom:1px solid var(--border-tactical); padding-bottom:0.55rem;">
+        <div id="snapZoomTitle" style="font-family:var(--font-mono); font-size:0.9rem; font-weight:700; color:var(--accent-emerald);">
+          🔍 INSPECCIÓN EN ALTA RESOLUCIÓN DE FOTOGRAMA CAPTURADO
+        </div>
+        <button class="btn btn-danger" id="btnCloseSnapZoom" type="button" style="padding:0.35rem 0.75rem;">
+          ✖ Cerrar Zoom (ESC)
+        </button>
+      </div>
+      <div style="text-align:center; background:#050708; border-radius:8px; padding:0.5rem; border:1px solid var(--border-tactical);">
+        <img id="snapZoomModalImg" alt="Vista Ampliada" style="max-width:100%; max-height:78vh; object-fit:contain; border-radius:4px;" />
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>

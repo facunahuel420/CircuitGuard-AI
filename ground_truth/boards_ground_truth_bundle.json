@@ -1,0 +1,156 @@
+{
+  "schema_version": "1.0.0-meta-agents-102",
+  "updated_at": "2026-10-29T16:53:31-03:00",
+  "technician_tool_profile": {
+    "available_tools": [
+      "Cautín de punta fina limada a medida",
+      "Estaño en pasta + Flux dosificado con aguja",
+      "Multímetro digital con puntas aguja (Modo Diodo / Voltaje / Continuidad)",
+      "Tester USB Amperimétrico-Voltímetro Mechanic + Placa Activadora Android 17-en-1",
+      "Microscopio Digital USB (Visor A)",
+      "Cámara Cenital Tablet USB (Visor B)",
+      "Lámpara UV compacta + aislante UV"
+    ],
+    "unavailable_tools": [
+      "Estación de soldadura por aire caliente (Hot Air Rework Station)",
+      "Fuente de laboratorio regulada de banco"
+    ],
+    "mandatory_constraint": "PROHIBIDO recomendar el uso de estación de aire caliente (para evitar derretir conectores FPC plásticos y porque el taller opera exclusivamente con microsoldadura a cautín de punta limada, flux y estaño en pasta con técnica de presión pin por pin con aguja)."
+  },
+  "boards": {
+    "iphone-11-pro-820-01523-a": {
+      "board_id": "iphone-11-pro-820-01523-a",
+      "display_name": "🍎 iPhone 11 Pro (820-01523-A // SoC A13 Bionic)",
+      "device_model": "Apple iPhone 11 Pro",
+      "board_number": "820-01523-A (Upper Logic Board - Cara A)",
+      "key_ics": {
+        "SoC": "Apple A13 Bionic (APL1W85)",
+        "PMIC": "STB601A0 (U2700)",
+        "Charger_IC": "SN2611A0 Tigris (U3300)",
+        "USB_PD_Hydra": "CBTL1612A1 Hydra (U6300)"
+      },
+      "connectors": {
+        "J6400": {
+          "description": "Conector FPC Dock / Lightning",
+          "reference_lines": [
+            {
+              "line_name": "PP5V0_USB_CONN",
+              "diode_mv_range": [420, 540],
+              "unit": "mV"
+            },
+            {
+              "line_name": "TRISTAR_BI_USB_FG_P/N",
+              "diode_mv_range": [640, 760],
+              "unit": "mV"
+            }
+          ]
+        },
+        "J6500": {
+          "description": "Conector FPC de Batería",
+          "reference_lines": [
+            {
+              "line_name": "PP_BATT_VCC",
+              "diode_mv_range": [290, 390],
+              "unit": "mV"
+            },
+            {
+              "line_name": "I2C0_SMC_SDA/SCL_1V8",
+              "diode_mv_range": [430, 530],
+              "unit": "mV"
+            }
+          ]
+        }
+      },
+      "lab_physical_note": "Placa Cara A separada (sándwich abierto) para inspección óptica de SoC A13, conectores FPC y huella BGA inferior con pads expuestos y resina epóxica.",
+      "mandatory_checklist_items": [
+        "Medir caída de tensión en modo diodo (punta roja a GND) en J6400 (PP5V0_USB_CONN: 420-540 mV; TRISTAR_BI_USB_FG_P/N: 640-760 mV).",
+        "Medir caída de tensión en J6500 (PP_BATT_VCC: 290-390 mV; I2C0_SMC_SDA/SCL_1V8: 430-530 mV).",
+        "Inspeccionar pads del interposer sándwich y pines FPC usando exclusivamente cautín de punta fina limada, flux y estaño en pasta con aguja (sin aire caliente)."
+      ]
+    },
+    "samsung-sm-a325m": {
+      "board_id": "samsung-sm-a325m",
+      "display_name": "📱 Samsung Galaxy A32 (SM-A325M // FPC HDC6000 78p)",
+      "device_model": "Samsung Galaxy A32 4G (SM-A325M)",
+      "board_number": "SM-A325M_MAIN_REV",
+      "key_ics": {
+        "SoC": "MediaTek Helio G80 (MT6769V/CU)",
+        "PMIC": "MT6358VW",
+        "IF_PMIC": "SM5714"
+      },
+      "connectors": {
+        "HDC6000": {
+          "description": "Conector FPC Principal Main-Sub de 78 pines",
+          "pin_count": 78,
+          "reference_lines": [
+            {
+              "line_name": "VBUS_IF_5V_9V (Pines 1-4)",
+              "diode_mv_range": [410, 530],
+              "unit": "mV"
+            },
+            {
+              "line_name": "USB_DP (Pin 11) / USB_DN (Pin 13)",
+              "diode_mv_range": [490, 660],
+              "unit": "mV"
+            },
+            {
+              "line_name": "IF_PMIC_I2C_SCL/SDA",
+              "diode_mv_range": [500, 680],
+              "unit": "mV"
+            }
+          ]
+        }
+      },
+      "documented_typical_fault": "FPC HDC6000 (78 pines) con pines centrales de datos/termistor levantados o en soldadura fría limitando carga a 0.50A (500 mA) con rayito intermitente en Tester USB Mechanic.",
+      "mandatory_checklist_items": [
+        "Verificar consumo en Tester USB Mechanic (si clava en 0.50A / 500 mA con rayito intermitente, auditar soldadura fría en pines centrales de HDC6000).",
+        "Medir modo diodo en HDC6000: VBUS_IF_5V_9V (pines 1-4: 410-530 mV), USB_DP pin 11 / USB_DN pin 13 (490-660 mV) e IF_PMIC_I2C_SCL/SDA (500-680 mV).",
+        "Resoldar pin por pin con cautín de punta fina limada, flux con aguja y estaño en pasta (PROHIBIDO aire caliente para no derretir el plástico de HDC6000)."
+      ]
+    },
+    "samsung-sm-a107m": {
+      "board_id": "samsung-sm-a107m",
+      "display_name": "📱 Samsung Galaxy A10s (SM-A107M // FPC CON5001 34p)",
+      "device_model": "Samsung Galaxy A10s (SM-A107M)",
+      "board_number": "SM-A107M_SUB_MAIN",
+      "key_ics": {
+        "SoC": "MediaTek Helio P22 (MT6762)",
+        "PMIC": "MT6357CRV",
+        "Charger_IC": "ETA6953 / SGM41511"
+      },
+      "connectors": {
+        "CON5001": {
+          "description": "Conector FPC Main-Sub de 34 pines",
+          "pin_count": 34,
+          "reference_lines": [
+            {
+              "line_name": "VBUS_5V_IN",
+              "diode_mv_range": [390, 540],
+              "unit": "mV"
+            },
+            {
+              "line_name": "USB_DP/DN",
+              "diode_mv_range": [460, 650],
+              "unit": "mV"
+            }
+          ]
+        },
+        "BTC5000": {
+          "description": "Conector FPC de Batería",
+          "reference_lines": [
+            {
+              "line_name": "VBAT",
+              "diode_mv_range": [320, 460],
+              "unit": "mV"
+            }
+          ]
+        }
+      },
+      "mandatory_checklist_items": [
+        "Medir modo diodo en CON5001 (34 pines): VBUS_5V_IN (390-540 mV) y USB_DP/DN (460-650 mV).",
+        "Medir modo diodo en conector de batería BTC5000: línea VBAT (320-460 mV).",
+        "Reconstruir pads o resoldar pines de CON5001 únicamente con cautín de punta fina limada, estaño en pasta con aguja y lámpara UV si hay máscara levantada."
+      ]
+    }
+  }
+}

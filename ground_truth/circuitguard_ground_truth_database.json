@@ -1,0 +1,611 @@
+{
+  "database_metadata": {
+    "system": "CircuitGuard AI — Computer Vision & Microscope Ground Truth Database",
+    "version": "1.0.0",
+    "generated_date": "2026-10-29",
+    "measurement_standard": {
+      "diode_mode_polarity": "Punta ROJA del multímetro a GND (chasis/blindaje), Punta NEGRA al pin bajo prueba (Conducción Inversa)",
+      "diode_mode_unit": "mV",
+      "voltage_unit": "V (DC)",
+      "diode_mode_tolerance": "±10% a ±15% según marca de multímetro (Fluke, Sunshine, UNI-T, Keysight) y temperatura de la placa (20°C–25°C)"
+    },
+    "certainty_levels": {
+      "DOCUMENTAL_100_SCHEMATIC": "Dato extraído directamente de esquemático oficial, Service Manual, Electrical Parts List o PCB Layout (códigos de componentes, pines, nombres de líneas, números de parte SEC/Apple y voltajes nominales).",
+      "REFERENCE_DIODE_BENCHMARK": "Rango estándar de caída de tensión en modo diodo (mV con punta roja a GND) medido en placas funcionales de referencia (Phoneboard / ZXW / JC Drawing / Borneo Schematics / SmartCurv)."
+    }
+  },
+  "downloadable_schematics_and_sources": {
+    "iphone_11_pro_and_820_01523_a": [
+      {
+        "title": "Apple iPhone 11 Pro Schematic Diagram V1.0 (62 páginas — Serie J4xxx/J5xxx/J6xxx: J6400, J5800, U2700, U1000)",
+        "format": "PDF / Online",
+        "board_coverage": "iPhone 11 Pro (Nomenclatura J6400 / J5800 / U2700 STB601A0N)",
+        "url": "https://www.scribd.com/document/631823628/iPhone-11-Pro-pdf"
+      },
+      {
+        "title": "iPhone 11 Logic SCH 820-01523 + Baseband 820-01525 (81 páginas — Esquemático Oficial Apple N104)",
+        "format": "PDF / Online",
+        "board_coverage": "820-01523-A (Upper Logic Board) + 820-01525 (Lower RF Board)",
+        "url": "https://www.scribd.com/document/1075828357/IPhone11-Logic-SCH-820-01523-Baseband-820-01525"
+      },
+      {
+        "title": "Apple iPhone 11 Pro Max PCB Layout (PCB: 820-01682 — 2 páginas con ubicación exacta de conectores J7xxx/J8xxx e ICs)",
+        "format": "PDF / Online",
+        "board_coverage": "820-01682 (iPhone 11 Pro / 11 Pro Max Upper Logic Board Layout)",
+        "url": "https://www.scribd.com/document/955369223/iPhone-11-Pro-Max-820-01682-PCB-Layout"
+      },
+      {
+        "title": "Apple MLB 820-01523 + 820-01525 Schematic & BoardView (.BRD / PDF)",
+        "format": "PDF + BoardView",
+        "board_coverage": "820-01523 + 820-01525",
+        "url": "https://laptop-schematics.com/view/15526/"
+      },
+      {
+        "title": "Apple MLB 820-01682 + 820-01508 (iPhone 11 Pro / Pro Max) Schematic & BoardView (.BRD / PDF)",
+        "format": "PDF + BoardView",
+        "board_coverage": "820-01682 + 820-01508",
+        "url": "https://laptop-schematics.com/view/15522/"
+      },
+      {
+        "title": "iPhone 11 Schematics Full Set & Silk Screen 820-01523 (111 páginas, 2.32 MB)",
+        "format": "PDF",
+        "board_coverage": "820-01523 Full Set + Silkscreen",
+        "url": "https://notebookschematics.com/iphone-11-schematics-full-set-silk-screen-820-01523-schematic-silkscreen/"
+      },
+      {
+        "title": "GitHub Repository: civicbatman/mobilephoneschematicdiagram (Phoneboard & iPhone 11 Pro Max Schematics)",
+        "format": "GitHub Repo",
+        "board_coverage": "iPhone 11 Pro Max & Samsung Schematics",
+        "url": "https://github.com/civicbatman/mobilephoneschematicdiagram"
+      }
+    ],
+    "samsung_galaxy_a32_4g_sm_a325m_a325f": [
+      {
+        "title": "Samsung SM-A325F Schematic and PCB (10 páginas — Esquemático Confidencial Samsung Sheets 1 a 7)",
+        "format": "PDF / Online",
+        "board_coverage": "SM-A325F / SM-A325M (RF, Transceiver, Sensors, AP MT6769 G80, PMIC MT6358, IF-PMIC S2MU106X01, Audio, Main FPCB, Camera, Display)",
+        "url": "https://www.scribd.com/document/1066946189/Sm-A325f-Schematic-and-Pcb"
+      },
+      {
+        "title": "Samsung SM-A325M PCB Layout Guide (2 páginas — Mapa completo Cara A y Cara B de SM-A325M)",
+        "format": "PDF / Online",
+        "board_coverage": "SM-A325M Main PBA Top & Bottom Component Placement (VX_SETUP 2020-11-25)",
+        "url": "https://www.scribd.com/document/893220385/Sm-A325m-Pcb-Layout"
+      },
+      {
+        "title": "Samsung Galaxy A32 SM-A325F Service Manual — Level 3 Repair Troubleshooting (28 páginas)",
+        "format": "PDF / Online",
+        "board_coverage": "SM-A325F / SM-A325M Flowcharts (Power On, Cable Charging, OTG, Display, Cameras, Audio, RF)",
+        "url": "https://www.scribd.com/document/893220050/SM-A325F-Service-Manual"
+      },
+      {
+        "title": "Samsung SM-A325F MAIN Electrical Parts List & Thermistor Specifications (9 páginas)",
+        "format": "PDF / Online",
+        "board_coverage": "SM-A325F / SM-A325M SEC Part Numbers & Design Locations (U5000, U5002, U6001, SOC6000, CN5000, TH1000, TH4000, TH4001)",
+        "url": "https://www.scribd.com/document/893220299/SM-A325F-Electrical-Parts-List"
+      },
+      {
+        "title": "Samsung Galaxy A32 SM-A325F / SM-A325M Block Diagram (1 página)",
+        "format": "PDF / Online",
+        "board_coverage": "SM-A325F/DS & SM-A325M/DS System Architecture",
+        "url": "https://www.scribd.com/document/893220216/SM-A325F-A325M-Block-Diagram"
+      },
+      {
+        "title": "SM-A325M/DS Component Layout & Troubleshooting Guide (33 páginas)",
+        "format": "PDF / Online",
+        "board_coverage": "SM-A325F/DS, SM-A325M/DS REV1.0 Block Diagram, PCB Layout & Level 3 Repair",
+        "url": "https://www.scribd.com/document/560814223/Troubleshooting"
+      },
+      {
+        "title": "Samsung SM-A325F Schematic and Specs (PCB Layout & Component Map)",
+        "format": "PDF / Online",
+        "board_coverage": "SM-A325F Main PBA Layout",
+        "url": "https://www.scribd.com/document/787144640/Sm-A325f-Galaxy-a32"
+      },
+      {
+        "title": "Índice Abierto de Esquemáticos Samsung Galaxy A32 (ph.i2mx.com.mx)",
+        "format": "HTTP Directory Index",
+        "board_coverage": "Samsung Galaxy A32 4G SM-A325F & SM-A326B Service Manual",
+        "url": "https://ph.i2mx.com.mx/Documents/Schematics/Smart%20Phone/Samsung/Samsung%20Galaxy%20A32/"
+      },
+      {
+        "title": "Samsung SM-A315F/G Complete Schematic Diagram (Descarga directa PDF — Plataforma gemela MT6768/G80 + MT6358 + S2MU106X01)",
+        "format": "Direct PDF Download",
+        "board_coverage": "Plataforma compartida SM-A315F / SM-A325F (el esquemático de SM-A325F conserva el cajetín SM-A315F en las hojas 2 y 3)",
+        "url": "https://www.freelancer.com/fs/download-api.php?type=contest&id=2505768&filename=SM-A315F.G%20%20Schematic%20Diagram.pdf"
+      }
+    ]
+  },
+  "board_1_apple_iphone_11_pro_820_01523_a": {
+    "engineering_note_board_and_nomenclature": {
+      "certainty": "DOCUMENTAL_100_SCHEMATIC",
+      "board_code_clarification": "En la documentación oficial de Apple, el código 820-01523-A corresponde a la Upper Logic Board del iPhone 11 base (modelo N104, pantalla LCD, emparejada con la placa RF 820-01525), mientras que la Upper Logic Board del iPhone 11 Pro / 11 Pro Max (modelos D42/D43, pantalla OLED Super Retina XDR) lleva el código 820-01682-A / 820-01589-A (emparejada con la placa RF 820-01508). Ambas placas comparten el mismo SoC Apple A13 Bionic (U1000, APL1W85 / CEBU-4GB-18NM-H) y la misma arquitectura de potencia (U2700, U3100, U3300, U3700, U4400, U4700, U6300).",
+      "dual_connector_nomenclature": "Para evitar falsos negativos en CircuitGuard AI al cruzar distintas fuentes (Phoneboard, ZXW, JC Drawing, Borneo), se documentan AMBAS nomenclaturas existentes en los esquemáticos: (1) Serie J4xxx/J5xxx/J6xxx (usada en el PDF 'Apple iPhone 11 Pro Schematic Diagram V1.0' y catálogos europeos como JM24/MobileSentrix) y (2) Serie J7xxx/J8xxx (usada en el esquemático nativo Apple 051-02447 / 820-01523 / 820-01682 y REWA)."
+    },
+    "fpc_connectors_cara_a": [
+      {
+        "schematic_code_series_j6000": "J6500 (también ref. J3200 en guías genéricas)",
+        "schematic_code_series_j7000_apple": "J7000 / J7010",
+        "pin_count_11_pro_oled": "4 pines eléctricos principales (+ 4 anclajes mecánicos/GND laterales, catalogado como 4 Pin / 5 Pin)",
+        "pin_count_11_lcd_820_01523": "4 pines eléctricos principales (+ 4 anclajes mecánicos/GND laterales)",
+        "physical_location_cara_a": "Abajo a la izquierda/centro, junto al PMIC principal (U2700) y al Charger IC Tigris/Yangtze (U3300), cerca del borde inferior del interposer.",
+        "connected_flex": "Flex de Batería (Battery Flex — PP_BATT_VCC, SWI/I2C Gas Gauge, GND)",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code_series_j6000": "J6400 (también ref. J2800)",
+        "schematic_code_series_j7000_apple": "J8200",
+        "pin_count_11_pro_oled": "34 pines",
+        "pin_count_11_lcd_820_01523": "34 pines",
+        "physical_location_cara_a": "Extremo inferior de la placa (abajo del PMIC U2700 y junto al Audio Codec U4700 / Hydra U6300).",
+        "connected_flex": "Flex de Dock de Carga Lightning, Micrófono Inferior (MIC1/MIC4), Taptic Engine, Altavoz Inferior ( Bottom Speaker Amp) y Antena Inferior.",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code_series_j6000": "J5700",
+        "schematic_code_series_j7000_apple": "J8000",
+        "pin_count_11_pro_oled": "36 pines (OLED Super Retina XDR en 11 Pro / 11 Pro Max 820-01682)",
+        "pin_count_11_lcd_820_01523": "26 pines (LCD Liquid Retina en iPhone 11 820-01523-A)",
+        "physical_location_cara_a": "Derecha / Centro-Derecha del SoC A13 (U1000) y arriba del PMIC (U2700), alineado verticalmente junto al borde derecho de la Upper Board.",
+        "connected_flex": "Flex de Pantalla (Display Panel OLED en 11 Pro / LCD en 11: líneas MIPI DSI, alimentación display, reset y sincronismo).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code_series_j6000": "J5800",
+        "schematic_code_series_j7000_apple": "J8100",
+        "pin_count_11_pro_oled": "20 pines",
+        "pin_count_11_lcd_820_01523": "20 pines",
+        "physical_location_cara_a": "Derecha del SoC A13 (U1000), inmediatamente adyacente/paralelo al conector de pantalla (J5700 / J8000).",
+        "connected_flex": "Flex de Digitalizador / Touch (Touch Panel SPI1, PP1V8_TOUCH_S2, PMU_TO_TOUCH_CLK32K_L).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code_series_j6000": "J4500 (Sensor/ALS) / J7600",
+        "schematic_code_series_j7000_apple": "J7600 (11 Pro) / J7900 (11 base)",
+        "pin_count_11_pro_oled": "28 pines (J7600 en 11 Pro / 11 Pro Max)",
+        "pin_count_11_lcd_820_01523": "16 pines (J7900 en iPhone 11 820-01523-A)",
+        "physical_location_cara_a": "Parte superior de la placa (arriba del SoC A13 U1000).",
+        "connected_flex": "Flex de Auricular Superior (Receiver/Earpiece Speaker), Flood Illuminator ('Penrose' FaceID), Sensor de Luz Ambiental (ALS), Sensor de Proximidad y Micrófono Frontal (MIC3).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code_series_j6000": "J4500 (Dot Projector) / J7800",
+        "schematic_code_series_j7000_apple": "J7800",
+        "pin_count_11_pro_oled": "10 pines",
+        "pin_count_11_lcd_820_01523": "10 pines",
+        "physical_location_cara_a": "Esquina superior izquierda/central, arriba del SoC A13 (U1000) y próximo al driver Rigel (U4400).",
+        "connected_flex": "Flex del Proyector de Puntos FaceID (Dot Projector / Lattice Projector 'Romeo' — alimentado por U4400 Rigel).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code_series_j6000": "J4200",
+        "schematic_code_series_j7000_apple": "J7830 (Front Cam) + J7900 (IR Cam)",
+        "pin_count_11_pro_oled": "18 pines (Front Camera J4200/J7830) / 36 pines (conector combinado Front + IR Camera 'Juliet')",
+        "pin_count_11_lcd_820_01523": "36 pines (Front Camera + Infrared Camera FPC)",
+        "physical_location_cara_a": "Arriba del SoC A13 (U1000), sector superior de cámaras frontales/FaceID.",
+        "connected_flex": "Flex de Cámara Frontal (FCAM — bus LPDP) y Cámara Infrarroja FaceID (IRCAM 'Juliet' — bus MIPI0C).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code_series_j6000": "J3920 (Wide Camera)",
+        "schematic_code_series_j7000_apple": "J7200",
+        "pin_count_11_pro_oled": "28 pines (iPhone 11 Pro / 11 Pro Max)",
+        "pin_count_11_lcd_820_01523": "22 pines (iPhone 11 820-01523-A)",
+        "physical_location_cara_a": "Arriba a la derecha del SoC A13 (U1000), junto al Camera PMU (U3700) y LDOs de cámara (U3900/U3910/U3940).",
+        "connected_flex": "Flex de Cámara Trasera Principal 1x Gran Angular (Rear Wide Angle Camera — bus LPDP).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code_series_j6000": "J3930 / J_SWIDE",
+        "schematic_code_series_j7000_apple": "J7300",
+        "pin_count_11_pro_oled": "26 pines",
+        "pin_count_11_lcd_820_01523": "26 pines",
+        "physical_location_cara_a": "Arriba a la derecha del SoC A13 (U1000), en el banco de conectores de cámaras traseras junto a J7200 y J7400.",
+        "connected_flex": "Flex de Cámara Trasera Ultra Gran Angular 0.5x ('SuperWide' Camera — bus LPDP).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code_series_j6000": "J3940 / J_TELE",
+        "schematic_code_series_j7000_apple": "J7400",
+        "pin_count_11_pro_oled": "26 pines (exclusivo de iPhone 11 Pro / 11 Pro Max con triple cámara)",
+        "pin_count_11_lcd_820_01523": "No poblado / Ausente en iPhone 11 base (dual cámara), presente en 11 Pro (26 pines)",
+        "physical_location_cara_a": "Arriba a la derecha del SoC A13 (U1000), junto a J7200 y J7300.",
+        "connected_flex": "Flex de Cámara Trasera Teleobjetivo 2x (Rear Telephoto Camera).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code_series_j6000": "J4300",
+        "schematic_code_series_j7000_apple": "J7700",
+        "pin_count_11_pro_oled": "16 a 22 pines (según variante de flex lateral/trasero)",
+        "pin_count_11_lcd_820_01523": "16 pines",
+        "physical_location_cara_a": "Borde superior/izquierdo respecto al SoC A13 (U1000) y PMIC (U2700).",
+        "connected_flex": "Flex de Botón de Encendido (Side/Power Key BUTTON_POWER_KEY_L), Botones de Volumen/Mute, Flash LED Trasero (Strobe), Micrófono Trasero (MIC2) y Bobina de Carga Inalámbrica (Dotara).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      }
+    ],
+    "critical_pinouts_and_diode_values": {
+      "battery_connector_j6500_j7000": {
+        "connector_codes": "J6500 / J7000 / J7010",
+        "pins": [
+          {
+            "pin_or_line": "Pin 1 (y pestaña de potencia positiva) — PP_BATT_VCC / PP_BATT_VCC_YANGTZE",
+            "destination_ic_balls": "U3300 (SN2611A0-1C) balls A1, B1, C1, D1, E1, F1 (BAT_SNS) + R3003 (9.53kΩ) hacia U2700-J9 (PMU_VBATT_VSENSE)",
+            "nominal_voltage_v": "3.80V a 4.35V DC",
+            "diode_mode_mv_red_to_gnd": "360 mV – 440 mV",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "pin_or_line": "Pines Centrales de Datos (Pines 2 y 3) — I2C0_SMC_SDA / I2C0_SMC_SCL y TIGRIS_TO_BATTERY_SWI (HDQ_GAUGE)",
+            "destination_ic_balls": "U1000 (A13 SMC) balls CM30 (I2C0_SMC_SDA) y CL23 (I2C0_SMC_SCL) + U3300 balls H3 (SDA) / G3 (SCL) + U3100 balls C2/B2; línea SWI/HDQ en U2700-D10 (TIGRIS_TO_BATTERY_SWI)",
+            "nominal_voltage_v": "1.80V DC (pull-up a PP1V8_ALWAYS / PP1V8_S2)",
+            "diode_mode_mv_red_to_gnd": "420 mV – 480 mV",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "pin_or_line": "Pin 4 (y anclajes mecánicos externos) — GND",
+            "destination_ic_balls": "Plano de tierra general (GND)",
+            "nominal_voltage_v": "0.00V",
+            "diode_mode_mv_red_to_gnd": "0 mV – 2 mV (Continuidad directa a GND)",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "DOCUMENTAL_100_SCHEMATIC"
+          }
+        ]
+      },
+      "dock_charging_connector_j6400_j8200": {
+        "connector_codes": "J6400 / J8200 (34 Pines)",
+        "pins": [
+          {
+            "pin_or_line": "Línea Principal de Carga 5V/9V — PP_VBUS1_E75 (PP5V0_USB_CONN)",
+            "destination_ic_balls": "U3300 (SN2611A0-1C Charger) balls A5, B5, C5, D5, E5 (con capacitores de filtro C3301 1uF, C3303/C3304 220pF y salida PMID en balls A6–J6)",
+            "nominal_voltage_v": "5.00V DC (carga estándar) / 9.00V DC (carga rápida USB-PD)",
+            "diode_mode_mv_red_to_gnd": "450 mV – 550 mV",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "pin_or_line": "Detección de VBUS y Conexión de Dock — J6400-15# (USB_VBUS_DETECT), J6400-17#, J6400-20#, J6400-24#, J6400-35#",
+            "destination_ic_balls": "J6400-15# -> R3332 (39kΩ) -> U3300-J3 (VBUS1_DET) y U1000-CM49 (IO_USB_VBUS_DETECT); IO_HYDRA_TO_NUB_PMU_DOCK_CONNECT -> U2700-M9 y U1000-CK24",
+            "nominal_voltage_v": "1.80V DC (lógica activa)",
+            "diode_mode_mv_red_to_gnd": "430 mV – 520 mV",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "pin_or_line": "Datos USB Diferenciales — 90_USB_AP_DATA_P (D+) y 90_USB_AP_DATA_N (D-)",
+            "destination_ic_balls": "Pasan por U6300 (Hydra NXP 1612A1) hacia U1000 (SoC A13) balls CR44 (USB_DP) y CP44 (USB_DM)",
+            "nominal_voltage_v": "0.00V – 3.30V DC (datos diferenciales)",
+            "diode_mode_mv_red_to_gnd": "650 mV – 760 mV (deben medir idénticos entre D+ y D- con margen ±10 mV)",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "pin_or_line": "Líneas de Identificación / Accesorios Lightning (ACC1 / ACC2 / CC) — PMU_BI_HYDRA_CC_R / HYDRA_TO_PMU_USB_BRICK_ID_TIA",
+            "destination_ic_balls": "U6300 (Hydra) <-> U2700-D11 (AMUX_A3), U2700-F14 / J8 (BRICK_ID1) y U4700-G1 (TIA_SENSE)",
+            "nominal_voltage_v": "1.80V – 3.30V DC",
+            "diode_mode_mv_red_to_gnd": "520 mV – 620 mV",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "pin_or_line": "Alimentación Principal en Dock (Amplificador Inferior / Taptic) — PP_VDD_MAIN y PP_VDD_BOOST",
+            "destination_ic_balls": "PP_VDD_MAIN desde U3300 balls A2–F2; PP_VDD_BOOST desde U3100 (SN61280E) balls B3/B4",
+            "nominal_voltage_v": "PP_VDD_MAIN: 3.80V–4.35V DC | PP_VDD_BOOST: 5.70V DC",
+            "diode_mode_mv_red_to_gnd": "PP_VDD_MAIN: 340 mV – 410 mV | PP_VDD_BOOST: 360 mV – 430 mV",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          }
+        ]
+      },
+      "display_and_touch_connectors_j5700_j8000_and_j5800_j8100": {
+        "connector_codes": "J5700 / J8000 (Display: 36 Pines en 11 Pro OLED / 26 Pines en 11 LCD) y J5800 / J8100 (Touch: 20 Pines)",
+        "pins": [
+          {
+            "pin_or_line": "PP_VDD_MAIN (Alimentación principal a Display / Chestnut)",
+            "destination_ic_balls": "Generada por U3300 (SN2611A0-1C) balls A2–F2 y distribuida al PMU U2700 (F9) y convertidor de pantalla",
+            "nominal_voltage_v": "3.80V – 4.35V DC",
+            "diode_mode_mv_red_to_gnd": "340 mV – 410 mV",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "pin_or_line": "PP_VDD_BOOST (Salida regulada de Boost para Display/Audio)",
+            "destination_ic_balls": "U3100 (SN61280E / 353S01124) balls B3, B4 (con bobina L3100 0.47uH en C3/C4) -> U2700 VDD_BOOST",
+            "nominal_voltage_v": "5.70V DC",
+            "diode_mode_mv_red_to_gnd": "360 mV – 430 mV",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "pin_or_line": "PP3V0_DISPLAY / PP3V0_S2 y PP1V8_S2 / PP1V0_DISPLAY_VDD (Alimentaciones LDO de Display)",
+            "destination_ic_balls": "U2700-H4 (VLDO13: PP3V0_DISPLAY), U2700-L1 (VLDO7/8: PP3V0_S2), U2700-R3/R4 (PP1V8_S2), U2700-H1/H3 (VLDO5: PP1V0_DISPLAY_VDD)",
+            "nominal_voltage_v": "3.00V DC / 1.80V DC / 1.00V DC",
+            "diode_mode_mv_red_to_gnd": "380 mV – 490 mV",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "pin_or_line": "Pares Diferenciales MIPI DSI (Display Data & Clock) — 90_MIPI_AP_TO_DISPLAY_CLK_P/N, D0_P/N, D1_P/N, D2_P/N",
+            "destination_ic_balls": "U1000 (SoC A13) balls CR62 (CLK_P), CP62 (CLK_N), CR59 (D0_P), CP59 (D0_N), CR64 (D1_P), CP64 (D1_N), CR61 (D2_P), CP61 (D2_N)",
+            "nominal_voltage_v": "0.20V – 1.20V DC (señal diferencial MIPI de alta velocidad)",
+            "diode_mode_mv_red_to_gnd": "310 mV – 380 mV (todas las líneas MIPI deben presentar valores uniformes entre sí)",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "pin_or_line": "Control y Estado de Display — GPIO_PMU_TO_DISPLAY_RESET_L, GPIO_PMU_TO_DISPLAY_PANICB, DISPLAY_TO_CHESTNUT_PWR_EN, IO_AP_FROM_DISPLAY_ALIVE",
+            "destination_ic_balls": "U2700-U7/K8 (DISPLAY_RESET_L), U2700-T7/G8 (DISPLAY_PANICB), U2700-E13/M10 (CHESTNUT_PWR_EN), U1000-E64 (DISPLAY_ALIVE)",
+            "nominal_voltage_v": "1.80V DC",
+            "diode_mode_mv_red_to_gnd": "420 mV – 510 mV",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "pin_or_line": "Líneas de Touch en J5800 / J8100 — PP1V8_TOUCH_S2, CLK_PMU_TO_TOUCH_32K, SPI1_AP_TO_TOUCH_SCLK/MOSI/MISO/CS_L",
+            "destination_ic_balls": "U2700-R5/A2 (PP1V8_TOUCH_S2), U2700-P8 (OUT_32K hacia J5800), U1000 balls BR2 (SPI1_SCLK), BR4 (SPI1_MOSI), BU3 (SPI1_MISO), BU4 (SPI1_SSIN), P66 (GPIO_AP_TO_TOUCH_RESET_L)",
+            "nominal_voltage_v": "1.80V DC (SPI y alimentación lógica)",
+            "diode_mode_mv_red_to_gnd": "390 mV – 470 mV",
+            "certainty_pin_and_net": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          }
+        ]
+      }
+    },
+    "main_ics_cara_a": [
+      {
+        "schematic_code": "U1000",
+        "apple_part_or_marking": "APL1W85 / 339S00648 (Esquemático: CEBU-4GB-18NM-H)",
+        "function": "SoC Principal Apple A13 Bionic (CPU P-Core/E-Core, GPU, Neural Engine, ISP, AOP, SMC, NUB + 4GB LPDDR4X PoP)",
+        "position_relative_to_a13": "Centro neurálgico de la Cara A (mitad superior/central de la Upper Logic Board).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code": "U2700",
+        "apple_part_or_marking": "338S00509 / STB601A0N / TMLF49B0-APZ",
+        "function": "PMIC Principal del Sistema (System PMU — Bucks 0 a 12 para CPU/GPU/SOC/SRAM/DDR/DISP y LDOs 1 a 14)",
+        "position_relative_to_a13": "Abajo del SoC A13 (U1000), rodeado por las bobinas principales de potencia (L2700–L2820).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code": "U3300",
+        "apple_part_or_marking": "SN2611A0-1C (Texas Instruments — 'Yangtze' / 'Tigris' Charger IC)",
+        "function": "IC de Carga Principal (Conmuta PP_BATT_VCC hacia PP_VDD_MAIN, recibe PP_VBUS1_E75 desde J6400/J8200 y PP_VBUS2_DOTARA desde carga inalámbrica con bobinas L3301 y L3302 de 1uH)",
+        "position_relative_to_a13": "Abajo del PMIC principal (U2700), en el sector inferior de la Cara A cerca del conector de batería (J6500 / J7000).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code": "U3100",
+        "apple_part_or_marking": "353S01124 / SN61280E (System Boost IC)",
+        "function": "Convertidor Boost Principal (Recibe PP_VDD_MAIN en A3/A4 y genera PP_VDD_BOOST en B3/B4 mediante la bobina L3100 de 0.47uH)",
+        "position_relative_to_a13": "Abajo del SoC A13 (U1000), entre el PMIC U2700 y la zona inferior de carga/audio.",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code": "U6300",
+        "apple_part_or_marking": "NXP 1612A1 ('Hydra' USB-PD / Tristar Controller)",
+        "function": "Controlador USB / Lightning y Negociación de Carga (Genera IO_HYDRA_TO_CHARGER_VBUS1_VALID_L, BRICK_ID_TIA, FORCE_DFU y multiplexación de datos USB/UART)",
+        "position_relative_to_a13": "Extremo inferior de la placa, debajo de U2700/U4700 y muy cerca del conector de Dock (J6400 / J8200).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code": "U4700",
+        "apple_part_or_marking": "338S00509 / Cirrus Logic CS42L77A1 ('Callan' Audio Codec)",
+        "function": "IC Codec de Audio Principal (Entradas de micrófonos MIC1–MIC4, Flood Illuminator Penrose AIN5/AIN6, Mikeybus, salidas PDM/I2S hacia amplificadores de audio)",
+        "position_relative_to_a13": "Sector inferior de la Cara A, debajo del PMIC U2700 y próximo a U6300 / J6400.",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code": "U3700",
+        "apple_part_or_marking": "338S00510 / D2657B0N0VNAVAG (Camera PMU1)",
+        "function": "PMIC Dedicado de Cámaras y FaceID (Genera PP1V4_CAM_PMU1_BUCK0 con bobina L3700 0.47uH y LDOs para FCAM, IRCAM, Penrose, Wide y SuperWide)",
+        "position_relative_to_a13": "Arriba a la derecha del SoC A13 (U1000), junto a los conectores de cámaras traseras (J7200/J7300/J7400).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code": "U4400",
+        "apple_part_or_marking": "STB601A0N ('Rigel' Dot Projector & Flood Driver)",
+        "function": "Driver Dual Buck-Boost para FaceID Dot Projector ('Romeo') e Infrarrojo (con bobinas L4400 y L4401 de 0.47uH)",
+        "position_relative_to_a13": "Arriba del SoC A13 (U1000), junto a los conectores superiores de FaceID (J7800 / J7600).",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code": "U2600",
+        "apple_part_or_marking": "NAND-S4E-S5E-MCP (PCIe NVMe NAND Flash + Lógica SPI0 de Boot Config)",
+        "function": "Memoria de Almacenamiento Masivo NAND NVMe (Enlace PCIe0 hacia U1000, alimentada por PP2V63_NAND, PP1V8_IO, PP1V2_IO_NAND y PP0V9_NAND; integra la EEPROM/SPI0 de arranque en Cara B/opuesta al A13)",
+        "position_relative_to_a13": "Ubicada en la Cara B (reverso directo del SoC A13 U1000 en la Upper Logic Board), con sus resistencias de configuración de arranque R0900/R0901 (4.7kΩ) accesibles desde el esquema lógico.",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      {
+        "schematic_code": "U1401",
+        "apple_part_or_marking": "STLNXA1L9YZ2S (Logic / Crypto / I2C4 Device)",
+        "function": "IC de interfaz sobre el bus I2C4_AP_SDA / I2C4_AP_SCL alimentado por PP1V8_IO",
+        "position_relative_to_a13": "Junto al SoC A13 (U1000) y al PMU de cámara (U3700) en la Cara A.",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      }
+    ]
+  },
+  "board_2_samsung_galaxy_a32_4g_sm_a325m": {
+    "board_identification": {
+      "models": [
+        "SM-A325M",
+        "SM-A325M/DS",
+        "SM-A325F",
+        "SM-A325F/DS"
+      ],
+      "soc": "MediaTek Helio G80 (MT6769V / MT6768, Design Location: U4000, SEC Part Code: 1205-006423)",
+      "pcb_revision_reference": "VX_SETUP(2020-11-25)_HHP / REV1.0 (comparte base esquemática con SM-A315F en hojas de RF/Sensores)",
+      "certainty": "DOCUMENTAL_100_SCHEMATIC"
+    },
+    "connectors_fpc_main_and_battery": {
+      "main_display_fpc_connector": {
+        "official_samsung_schematic_code": "SOC6000",
+        "borneo_and_alternative_codes": "HDC6000 / J6001",
+        "sec_part_number": "3710-004501 (CONNECTOR-SOCKET)",
+        "pin_count": "78 pines (dos filas de 39 pines + 4 pines/anclajes de potencia en los extremos)",
+        "physical_location": "Cara A (Lado Frontal/Superior de la Main PBA, donde está el PMIC U5002 y la sección RF), ubicado horizontalmente en el borde inferior izquierdo, justo al lado del conector de batería CN5000.",
+        "vbus_5v_9v_extreme_location": "EXTREMO DEL LADO SUB-PBA (opuesto al extremo de líneas MIPI de pantalla): los pines de entrada de carga VBUS_5V_9V (VBUS_OVP) se encuentran en el extremo del conector SOC6000 más cercano al test point 'VBUS' y al borde externo/derecho del propio conector SOC6000 (pines de potencia 1, 2 y 77, 78 en numeración de extremo de carga). La pista cruza al reverso (Cara B) directo al capacitor de entrada C6016 (VBUS_OVP) y entra al IC OVP U6001.",
+        "critical_lines_and_pins": [
+          {
+            "signal_name": "VBUS_OVP (VBUS_5V_9V — Entrada de Carga desde Sub-PBA)",
+            "location_on_connector": "Extremo de carga de SOC6000 (junto al Test Point 'VBUS' en Cara A -> pasa a C6016 y entrada de U6001 en Cara B)",
+            "expected_voltage_v": "5.00V DC (Cargador 5V estándar) / 9.00V DC (Cargador Fast Charge AFC 15W/25W)",
+            "diode_mode_mv_red_to_gnd": "450 mV – 560 mV",
+            "certainty_net_and_voltage": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "signal_name": "USB_DP (Datos USB D+) y USB_DN (Datos USB D-)",
+            "location_on_connector": "Sector del extremo de carga de SOC6000 -> conectados directamente a los Test Points 'USB_DP' y 'USB_DN' situados justo debajo de SOC6000/CN5000 en Cara A -> pasan en Cara B por resistencias serie y diodos TVS ZD6001/ZD6002 (0406-001809) hacia el IF-PMIC U5000 (S2MU106X01-6031) y el SoC U4000 (USB_AP_D_P/N)",
+            "expected_voltage_v": "0.00V – 3.30V DC (en negociación AFC oscila entre 0.6V y 3.3V; sin datos queda en 0V)",
+            "diode_mode_mv_red_to_gnd": "580 mV – 680 mV (deben ser estrictamente simétricos entre D+ y D-, diferencia máxima ≤ 10 mV)",
+            "certainty_net_and_voltage": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "signal_name": "CC1 / CC2 y USB_ID (Detección de orientación Type-C y OTG)",
+            "location_on_connector": "Sector de carga de SOC6000 -> Test Point 'ID' junto a SOC6000 -> controlador CC/MUIC integrado en el IF-PMIC U5000 (S2MU106X01-6031)",
+            "expected_voltage_v": "0.40V – 1.70V DC (con cable USB-C conectado)",
+            "diode_mode_mv_red_to_gnd": "480 mV – 580 mV",
+            "certainty_net_and_voltage": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "signal_name": "SUB_THM / SUB_DET (Termistor y detección de Sub-Placa de Carga)",
+            "location_on_connector": "Pines de control del lado Sub-PBA en SOC6000 -> divisor resistivo de 1.8V (VIO_PMU_AP_1P8) hacia canal ADC del PMIC/AP. (En la Main PBA existen además los termistores NTC TH1000 [2007-008312], V1000 [1404-001724], TH4000 [1404-001724 junto a U4000] y TH4001 [1404-001724 junto a U5000])",
+            "expected_voltage_v": "0.60V – 1.10V DC a 25°C (alimentado desde riel de 1.8V a través de resistencia pull-up de 100kΩ)",
+            "diode_mode_mv_red_to_gnd": "500 mV – 640 mV",
+            "certainty_net_and_voltage": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "signal_name": "Líneas de Pantalla Super AMOLED en SOC6000 (Extremo Display)",
+            "location_on_connector": "Mitad opuesta del conector SOC6000: pares MIPI_DSI0_CLK_P/N, D0_P/N, D1_P/N, D2_P/N, D3_P/N (vienen de U4000 bolas P27–U25) + alimentaciones de display VDD_LCD_3P0 (C7057 = 3.0V desde U7006), VDD_LCD_1P8 (C7058 = 1.8V desde U7008), VDD_LCD_ELVDD_4P6 (C7055 = +4.6V), VDD_LCD_ELVSS_-4P4 (C7056 = -4.4V a -1.4V) y VDD_LCD_ELAVDD_7P6 (C7038 = +7.6V) desde U7010 + Test Points TP_EL_ON6000, TP_EL_ON6001 y TP_DISP_TE",
+            "expected_voltage_v": "3.0V, 1.8V, +4.6V, -4.4V, +7.6V (con pantalla encendida)",
+            "diode_mode_mv_red_to_gnd": "Líneas MIPI DSI: 320 mV – 390 mV | VDD_LCD_1P8 / 3P0: 410 mV – 520 mV | ELVDD/AVDD: 450 mV – 600 mV",
+            "certainty_net_and_voltage": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          }
+        ]
+      },
+      "battery_connector": {
+        "official_samsung_schematic_code": "CN5000",
+        "borneo_and_alternative_codes": "BTC6000 / BTC5000",
+        "sec_part_number": "3710-004008 (CONNECTOR-SOCKET)",
+        "pin_count": "6 pines físicos (2 extremos de potencia VBAT/GND + 4 pines centrales de sensado/termistor/ID)",
+        "physical_location": "Cara A (Lado Frontal/Superior de la Main PBA), esquina inferior derecha, inmediatamente a la derecha del conector principal SOC6000.",
+        "critical_lines_and_pins": [
+          {
+            "signal_name": "VBAT (Positivo de Batería)",
+            "location_on_connector": "Pin de potencia positivo de CN5000 -> conectado a la salida de carga del IF-PMIC U5000 (a través de resistencias de sensado/capacitores en Cara B encima del conector de batería) y al PMIC principal U5002",
+            "expected_voltage_v": "3.80V – 4.40V DC (Service Manual 8-4-1 exige > 3.8V para arranque normal; < 3.0V batería descargada)",
+            "diode_mode_mv_red_to_gnd": "350 mV – 430 mV",
+            "certainty_net_and_voltage": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "signal_name": "BAT_THM / VF / BAT_ID (Termistor e Identificación de Batería)",
+            "location_on_connector": "Pines centrales de CN5000 -> circuito divisor con pull-up a 1.8V hacia el IF-PMIC U5000 / PMIC U5002",
+            "expected_voltage_v": "0.60V – 1.20V DC (con batería conectada)",
+            "diode_mode_mv_red_to_gnd": "500 mV – 620 mV",
+            "certainty_net_and_voltage": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "signal_name": "FG_SENSE_P / FG_SENSE_N (Fuel Gauge Differential Current Sense)",
+            "location_on_connector": "Pines centrales de sensado de corriente hacia el Fuel Gauge integrado en el IF-PMIC U5000 (S2MU106X01-6031)",
+            "expected_voltage_v": "0.00V – 3.80V DC (según rama de shunt a GND o VBAT)",
+            "diode_mode_mv_red_to_gnd": "350 mV – 550 mV (o continuidad baja a GND en el lado de retorno del shunt)",
+            "certainty_net_and_voltage": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "REFERENCE_DIODE_BENCHMARK"
+          },
+          {
+            "signal_name": "GND (Negativo de Batería)",
+            "location_on_connector": "Pin de potencia negativo y anclajes metálicos de CN5000",
+            "expected_voltage_v": "0.00V",
+            "diode_mode_mv_red_to_gnd": "0 mV – 2 mV",
+            "certainty_net_and_voltage": "DOCUMENTAL_100_SCHEMATIC",
+            "certainty_diode": "DOCUMENTAL_100_SCHEMATIC"
+          }
+        ]
+      }
+    },
+    "charging_ic_if_pmic_and_ovp": {
+      "ovp_ic": {
+        "schematic_code": "U6001",
+        "sec_part_number": "1203-008475 (IC-OVP / Over-Voltage Protection)",
+        "physical_location": "Cara B (Lado Posterior/Inferior de la Main PBA, debajo de las ranuras SIM y próximo a U5000), rodeado por C6016, C6015, C6032, D6000, ZD6001 y ZD6002.",
+        "input_line_and_cap": "VBUS_OVP en capacitor C6016 (2203-002285) = 5.0V o 9.0V DC (viene desde el conector SOC6000).",
+        "output_line_and_cap": "VBUS_IF en capacitores C6015 (2203-008860) y C5024 (2203-005682) = 5.0V o 9.0V DC (va directo a la entrada del IF-PMIC U5000).",
+        "diode_mode_mv_red_to_gnd": "Entrada C6016: 450–560 mV | Salida C6015/C5024: 440–540 mV",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      "if_pmic_charger_ic": {
+        "schematic_code": "U5000",
+        "ic_marking_and_model": "Samsung S2MU106X01-6031 (IF-PMIC: Switching Charger + Fuel Gauge + MUIC/AFC + Flash LED + OTG Boost)",
+        "sec_part_number": "1203-009470",
+        "note_on_sm5714": "En el Samsung Galaxy A32 4G (SM-A325F / SM-A325M), el IF-PMIC documentado en el Block Diagram y Parts List oficial de Samsung NO es el SM5714 (usado en A52/A72), sino el Samsung S2MU106X01-6031 (U5000, código SEC 1203-009470).",
+        "physical_location": "Cara B (Lado Posterior/Inferior de la Main PBA), debajo del SoC U4000 y arriba de U6001.",
+        "associated_coils_and_caps": [
+          "L5003 (3301-002331) y L6000 (2703-005505): Bobina principal de conmutación Buck/Boost (LX / V_SYS) situada junto a U5000.",
+          "L5009 y L5010 (3301-002372): Ferritas/inductores asociados en la etapa de salida de U5000.",
+          "C5033 (2203-007425): Capacitor de Bootstrap (BOOT1) del convertidor de carga, ubicado junto a L5003 y D5003.",
+          "C5024 (2203-005682): Capacitor de entrada VBUS_IF (5V / 9V) junto a U5000.",
+          "C5030 (2203-007393) y C5029 (2203-006872): Capacitores de salida V_SYS / VBAT junto a U5000."
+        ],
+        "output_voltages": {
+          "VBUS_IF_input": "5.00V DC (estándar) / 9.00V DC (carga rápida AFC)",
+          "V_SYS_output": "3.70V – 4.40V DC (alimenta al PMIC principal U5002 MT6358)",
+          "VBAT_charging_output": "3.80V – 4.40V DC (hacia el conector de batería CN5000)",
+          "OTG_output": "5.00V DC en C5024 (VBUS_IF) y C6016 (VBUS_OVP) cuando opera en modo Host OTG (Service Manual 8-4-7)"
+        },
+        "communication_bus": "FG_IF_PMIC_I2C (SDA / SCL a 1.8V hacia el SoC U4000 MT6769V)",
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      },
+      "main_pmic": {
+        "schematic_code": "U5002",
+        "ic_marking_and_model": "MediaTek MT6358 / MT6358W",
+        "sec_part_number": "1203-009404",
+        "physical_location": "Cara A (Lado Frontal/Superior de la Main PBA), en la zona central debajo de la etapa RF.",
+        "associated_buck_coils_and_voltages": [
+          "L5006 (2703-005724): > 1.35V DC (VS2 Buck — Service Manual 8-4-1)",
+          "L5004 (2703-005505): > 2.00V DC (VS1_PMU_2P0 Buck — Service Manual 8-4-1)",
+          "L5002 (2703-005505): > 0.50V DC (VPROC / VCORE Buck — Service Manual 8-4-1)",
+          "L5000, L5001, L5005, L5007, L5008, L5011, L5012: Bobinas Buck de CPU, GPU, MODEM y PA (2703-005505 / 2703-005201 / 2703-005581)",
+          "VDD_A_1P2: 1.20V DC (±10%)",
+          "OSC5000 (2801-005542): Cristal oscilador principal de 26 MHz"
+        ],
+        "certainty": "DOCUMENTAL_100_SCHEMATIC"
+      }
+    },
+    "diagnostic_guide_0_50a_intermittent_lightning_bolt": {
+      "symptom": "Consumo clavado en 0.50A (450–500 mA en tester USB) y/o ícono de rayito de carga intermitente sin subir porcentaje o con reinicio del ciclo de carga.",
+      "root_causes_and_measurements": [
+        {
+          "priority": 1,
+          "cause": "Fisura / Soldadura Fría en Pines de Datos USB (USB_DP / USB_DN) o CC1/CC2 del Conector FPC SOC6000 (HDC6000)",
+          "technical_explanation": "En el SM-A325M/F el flex principal sufre tracción mecánica constante. Cuando VBUS (5V) sí llega a C6016 -> U6001 -> C6015 -> U5000, el teléfono detecta presencia física de cargador y muestra el rayito. Sin embargo, si USB_DP o USB_DN están abiertos (OL en modo diodo) o desbalanceados en SOC6000 (o en los diodos ESD ZD6001/ZD6002), el IF-PMIC U5000 (S2MU106X01-6031) y el SoC U4000 no pueden ejecutar la enumeración BC1.2 / AFC (Dedicated Charging Port). Por seguridad del estándar USB 2.0, el S2MU106X01 limita la corriente de entrada exactamente a 500 mA (0.50A).",
+          "verification_test": "Medir en modo diodo (punta roja a GND) en los Test Points 'USB_DP' y 'USB_DN' situados debajo de SOC6000 en Cara A (con el flex conectado para validar también el flex y la Sub-PBA, y sin el flex sobre los pines de SOC6000). Deben medir ~580–680 mV idénticos. Si uno mide OL, resoldar los pines del extremo de carga de SOC6000."
+        },
+        {
+          "priority": 2,
+          "cause": "Sub-PBA Genérica ('Copy/Market') sin IC/Termistor o Línea SUB_THM / BAT_THM Abierta",
+          "technical_explanation": "Las sub-placas de carga no originales omiten componentes de filtrado e identificación térmica, o el pin BAT_THM en CN5000 / SUB_THM en SOC6000 pierde su tensión de referencia (0.6V–1.1V desde pull-up de 1.8V). Esto provoca que el IF-PMIC U5000 corte y reactive la etapa de carga en bucle (rayito intermitente) o bloquee la corriente en 0.50A.",
+          "verification_test": "Verificar caída en modo diodo en los pines centrales de CN5000 (500–620 mV) y comprobar la presencia de ~0.6V–1.1V con batería/sub-placa original conectada. Revisar también los termistores de placa madre TH4001 (junto a U5000) y TH4000 (junto a U4000)."
+        },
+        {
+          "priority": 3,
+          "cause": "Falla en Capacitor de Bootstrap C5033 (BOOT1) o Bobina de Conmutación L5003 del IF-PMIC U5000 (S2MU106X01-6031)",
+          "technical_explanation": "Si el capacitor de bootstrap C5033 (conectado al pin BOOT1 de U5000) tiene fuga/valor alterado o la bobina L5003 tiene soldadura fría, el convertidor Buck del S2MU106X01 no logra sostener el ciclo PWM de carga hacia V_SYS/VBAT: muestra el rayo al detectar VBUS_IF (5V en C6015/C5024), intenta conmutar, cae y reinicia el ícono de carga.",
+          "verification_test": "Medir en C6016 (VBUS_OVP = 5V/9V) y C6015/C5024 (VBUS_IF = 5V/9V). Si ambos están presentes pero en L5003 / C5030 la tensión oscila o no supera la tensión de batería, revisar C5033, L5003 y reemplazar U5000 (S2MU106X01-6031, código SEC 1203-009470) según el Service Manual 8-4-6."
+        },
+        {
+          "priority": 4,
+          "cause": "Fuga en OVP U6001 (1203-008475) o Caída en Bus I2C del Fuel Gauge (FG_IF_PMIC_I2C)",
+          "technical_explanation": "Si U6001 presenta resistencia interna elevada, VBUS_IF en C6015 cae por debajo de 4.5V bajo carga de >500 mA, provocando desconexión intermitente del rayito. Asimismo, si las líneas I2C entre U5000 y U4000 tienen sulfatación, el AP no lee el Fuel Gauge y limita la carga.",
+          "verification_test": "Comprobar con el cargador conectado que la tensión en C6015 (salida de U6001) no caiga respecto a C6016 (entrada de U6001)."
+        }
+      ]
+    }
+  }
+}

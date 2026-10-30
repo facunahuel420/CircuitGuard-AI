@@ -28,3 +28,8 @@ env/
 .DS_Store
 Thumbs.db
 /tmp/
+
+# Backup files and internal reports (STRICT PRE-RELEASE EXCLUSIONS)
+*.bak*
+REPORTE_ESTADO*.md
+AUDITORIA_*.md

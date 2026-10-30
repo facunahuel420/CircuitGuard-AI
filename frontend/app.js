@@ -60,6 +60,24 @@
         unitReplacementUsd: 8.5,
         lastAtomicTimestamp: '2026-10-26T23:20:05.000Z',
         auditHash: '2c60d4e891fa3307'
+      },
+      {
+        boxId: 'Caja #42',
+        sku: 'SCRAP-DONOR-BOARDS',
+        description: 'Placas Donantes Originales (Desarme A32 / A10s / iPhone 11 Pro)',
+        qty: 15,
+        unitReplacementUsd: 14.0,
+        lastAtomicTimestamp: '2026-10-26T23:18:10.000Z',
+        auditHash: '8e12f4c903ab7711'
+      },
+      {
+        boxId: 'Caja #55',
+        sku: 'ACC-PWR-BATT-OEM',
+        description: 'Cargadores 25W PD + Cables Certificados + Baterías OEM',
+        qty: 32,
+        unitReplacementUsd: 9.0,
+        lastAtomicTimestamp: '2026-10-26T23:15:00.000Z',
+        auditHash: '5b91a0d742ce6190'
       }
     ]
   };
@@ -532,9 +550,372 @@
     }
   }
 
-  async function captureAndDiagnose() {
+  // ==========================================================================
+  // 3A-EXTRA. SAM 3.1 CANVAS BOUNDING BOX OVERLAY & HANDS-FREE COUNTDOWN BEEPER
+  // ==========================================================================
+  let countdownTimerId = null;
+
+  function playTacticalBeep(freqHz, durationMs, count) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    try {
+      const ctx = new AudioCtx();
+      const totalBeeps = count || 1;
+      for (let i = 0; i < totalBeeps; i++) {
+        const startOffset = i * ((durationMs + 70) / 1000);
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freqHz || 880, ctx.currentTime + startOffset);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime + startOffset);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startOffset + durationMs / 1000);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + startOffset);
+        osc.stop(ctx.currentTime + startOffset + durationMs / 1000);
+      }
+      setTimeout(() => {
+        if (ctx.state !== 'closed') {
+          ctx.close().catch(() => {});
+        }
+      }, totalBeeps * (durationMs + 100) + 150);
+    } catch (_e) {
+      // Ignore Web Audio autoplay restrictions if triggered without gesture
+    }
+  }
+
+  function startHandsFreeCountdown(seconds) {
+    const badge = document.getElementById('handsFreeCountdownBadge');
+    if (countdownTimerId) {
+      clearInterval(countdownTimerId);
+      countdownTimerId = null;
+    }
+    let remaining = parseInt(seconds, 10) || 10;
+    if (badge) {
+      badge.style.display = 'inline-flex';
+      badge.textContent = `⏱️ CAPTURA EN: ${remaining}s`;
+    }
+    playTacticalBeep(740, 90, 1);
+
+    countdownTimerId = setInterval(() => {
+      remaining -= 1;
+      if (remaining > 0) {
+        if (badge) {
+          badge.textContent = `⏱️ CAPTURA EN: ${remaining}s`;
+        }
+        playTacticalBeep(remaining <= 3 ? 980 : 740, 85, 1);
+      } else {
+        clearInterval(countdownTimerId);
+        countdownTimerId = null;
+        if (badge) {
+          badge.textContent = '📸 ¡CAPTURANDO AHORA!';
+          setTimeout(() => {
+            badge.style.display = 'none';
+          }, 2500);
+        }
+        playTacticalBeep(1320, 110, 2);
+        captureAndDiagnose();
+      }
+    }, 1000);
+  }
+
+  function drawSamBoxesOnCanvas(dataUrl, samBoxes, includeA) {
+    const canvas = document.getElementById('previewCanvasA');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.onload = () => {
+      const cw = img.naturalWidth || 640;
+      const ch = img.naturalHeight || 360;
+      canvas.width = cw;
+      canvas.height = ch;
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.globalAlpha = includeA ? 1.0 : 0.35;
+      ctx.drawImage(img, 0, 0, cw, ch);
+      ctx.globalAlpha = 1.0;
+
+      if (Array.isArray(samBoxes) && samBoxes.length > 0) {
+        samBoxes.forEach((box, idx) => {
+          const refW = box.w || cw;
+          const refH = box.h || ch;
+          const scaleX = cw / refW;
+          const scaleY = ch / refH;
+          const x1 = Math.round((box.x1 || 0) * scaleX);
+          const y1 = Math.round((box.y1 || 0) * scaleY);
+          const x2 = Math.round((box.x2 || 0) * scaleX);
+          const y2 = Math.round((box.y2 || 0) * scaleY);
+          const bw = Math.max(8, x2 - x1);
+          const bh = Math.max(8, y2 - y1);
+
+          ctx.strokeStyle = idx % 2 === 0 ? '#00ff88' : '#00d4ff';
+          ctx.lineWidth = 2.5;
+          ctx.strokeRect(x1, y1, bw, bh);
+
+          const label = `#${box.id !== undefined ? box.id : idx + 1} SAM-3.1`;
+          ctx.font = 'bold 12px monospace';
+          const textW = ctx.measureText(label).width + 10;
+          const tagY = Math.max(0, y1 - 18);
+          ctx.fillStyle = 'rgba(10, 13, 14, 0.88)';
+          ctx.fillRect(x1, tagY, textW, 18);
+          ctx.fillStyle = idx % 2 === 0 ? '#00ff88' : '#00d4ff';
+          ctx.fillText(label, x1 + 5, tagY + 13);
+        });
+      }
+    };
+    img.src = dataUrl;
+  }
+
+  function renderDeterministicAuditSummary(audit, assistantMode) {
+    if (!audit) return '';
+    const auditBodyEl = document.getElementById('deterministicAuditBody');
+    const connectorsList = Array.isArray(audit.contrasted_connectors)
+      ? audit.contrasted_connectors.join(', ')
+      : 'N/A';
+    const checklistItems = Array.isArray(audit.mandatory_checklist_items)
+      ? audit.mandatory_checklist_items
+      : [];
+
+    if (auditBodyEl) {
+      auditBodyEl.textContent =
+        `Placa: ${audit.board_name || audit.board_id} (${audit.board_part_number || 'PCB'}) | ` +
+        `Conectores GT: [${connectorsList}] | Herramienta: ${audit.tool_audit_status || 'Cautín OK'}`;
+    }
+
+    // In 'concise' or 'pin_log' modes, keep chat header ultra-compact (no unrequested checklist dump)
+    if (assistantMode === 'concise' || assistantMode === 'pin_log') {
+      return `🛡️ [GT: ${audit.board_name || audit.board_id} | ${audit.tool_audit_status || 'Cautín OK'}]\n`;
+    }
+
+    const checklistFormatted = checklistItems
+      .map((item, i) => `   ✓ [${i + 1}] ${item}`)
+      .join('\n');
+
+    return (
+      `🛡️ [AUDITORÍA DETERMINISTA — META AGENTES 102]\n` +
+      `• Placa Ground Truth Contrastada: ${audit.board_name || audit.board_id} (Part: ${audit.board_part_number || 'N/A'})\n` +
+      `• Conectores Verificados en Bundle: ${connectorsList}\n` +
+      `• Validación de Herramienta del Técnico: ${audit.tool_audit_status || '✅ Cautín OK / Sin Aire Caliente'}\n` +
+      (checklistFormatted ? `• Checklist Verificable de Placa:\n${checklistFormatted}\n\n` : `\n`)
+    );
+  }
+
+  // ==========================================================================
+  // 3A-PINLOGGER. SESSION PIN-BY-PIN MAPPER, MARKDOWN EXPORT & SNAPSHOT ZOOM
+  // ==========================================================================
+  state.sessionPins = [];
+  state.lastSchematicVerdict = '';
+
+  function evaluatePinQuickStatus(measuredValue) {
+    const raw = String(measuredValue || '').trim().toLowerCase();
+    if (!raw) return '⏳ Registrado';
+    if (raw.includes('ol') || raw.includes('open') || raw.includes('abierto')) {
+      return '❌ FALLA (Abierto OL)';
+    }
+    const numMatch = raw.replace(',', '.').match(/(\d+(?:\.\d+)?)/);
+    if (numMatch) {
+      const val = parseFloat(numMatch[1]);
+      const mv = raw.includes('v') && !raw.includes('mv') && val < 5 ? val * 1000 : val;
+      if (mv < 65) return '❌ FALLA (Corto / <65mV)';
+      if (mv > 950) return '⚠️ FALLA (Fuga / >950mV)';
+    }
+    return '✅ OK (En Rango)';
+  }
+
+  function deletePinRow(index) {
+    if (index < 0 || index >= state.sessionPins.length) return;
+    state.sessionPins.splice(index, 1);
+    renderPinSessionTable();
+  }
+
+  function flashAiAutoLoadBadge() {
+    const flashEl = document.getElementById('aiAutoLoadFlashBadge');
+    if (!flashEl) return;
+    flashEl.style.display = 'inline-flex';
+    flashEl.textContent = '🤖 Cargado automáticamente por IA';
+    setTimeout(() => {
+      flashEl.style.display = 'none';
+    }, 4000);
+  }
+
+  function renderPinSessionTable() {
+    const tbody = document.getElementById('pinSessionTableBody');
+    const countBadge = document.getElementById('pinSessionCountBadge');
+    if (countBadge) {
+      countBadge.textContent = `${state.sessionPins.length} MEDICIONES IA`;
+    }
+    if (!tbody) return;
+    while (tbody.firstChild) {
+      tbody.removeChild(tbody.firstChild);
+    }
+
+    if (state.sessionPins.length === 0) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 9;
+      td.style.textAlign = 'center';
+      td.style.color = 'var(--text-secondary)';
+      td.textContent =
+        'Sin mediciones en la sesión actual. Presioná "📸 Capturar" o "📌 Capturar y Auto-Guardar Medición en Tabla" para que la IA inserte los valores automáticamente.';
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+
+    state.sessionPins.forEach((item, idx) => {
+      const tr = document.createElement('tr');
+      if (idx === state.sessionPins.length - 1 && item.justAddedByAi) {
+        tr.style.background = 'rgba(0, 255, 136, 0.1)';
+      }
+      const cells = [
+        String(idx + 1),
+        item.board_id || 'PCB',
+        item.component_type || 'FPC / Pin / Línea',
+        item.connector || 'FPC',
+        item.pin || `Pin ${idx + 1}`,
+        item.tester_mode || 'Diodo (mV)',
+        item.measured_value || 'N/A',
+        item.status || evaluatePinQuickStatus(item.measured_value)
+      ];
+      cells.forEach((textVal, cIdx) => {
+        const td = document.createElement('td');
+        td.textContent = textVal;
+        if (cIdx === 2) {
+          td.style.color = 'var(--accent-emerald)';
+          td.style.fontWeight = '600';
+        }
+        if (cIdx === 6) {
+          td.style.fontWeight = '700';
+          td.style.color = 'var(--accent-cyan)';
+          td.title = 'Clic si deseás corregir el valor detectado por IA';
+          td.style.cursor = 'pointer';
+          td.addEventListener('click', () => {
+            const newVal = window.prompt('Corregir Valor Medido del Tester:', item.measured_value || '');
+            if (newVal !== null && newVal.trim() !== '') {
+              state.sessionPins[idx].measured_value = newVal.trim();
+              state.sessionPins[idx].status = evaluatePinQuickStatus(newVal.trim());
+              renderPinSessionTable();
+            }
+          });
+        }
+        if (cIdx === 7) {
+          td.style.fontWeight = '700';
+          td.style.color = textVal.includes('FALLA') ? '#f87171' : 'var(--accent-emerald)';
+        }
+        tr.appendChild(td);
+      });
+
+      // Columna Acción: Botón 🗑️ Borrar por fila
+      const actionTd = document.createElement('td');
+      const delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.className = 'btn btn-danger';
+      delBtn.style.padding = '0.22rem 0.55rem';
+      delBtn.style.fontSize = '0.72rem';
+      delBtn.textContent = '🗑️ Borrar';
+      delBtn.title = 'Eliminar esta medición de la tabla';
+      delBtn.addEventListener('click', () => deletePinRow(idx));
+      actionTd.appendChild(delBtn);
+      tr.appendChild(actionTd);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  function addPinReadingToSession(pinReading, boardId) {
+    if (!pinReading) return;
+    state.sessionPins.forEach((p) => {
+      p.justAddedByAi = false;
+    });
+    const quickStatus = evaluatePinQuickStatus(pinReading.measured_value);
+    const aiBadgeStatus = pinReading.status
+      ? `${quickStatus} (${pinReading.status})`
+      : `${quickStatus} (🤖 IA)`;
+    const entry = {
+      board_id: boardId || 'iphone-11-pro-820-01523-a',
+      component_type: String(pinReading.component_type || 'FPC / Pin / Línea'),
+      connector: String(pinReading.connector || 'FPC'),
+      pin: String(pinReading.pin || `Pin ${state.sessionPins.length + 1}`),
+      tester_mode: String(pinReading.tester_mode || 'Diodo (mV)'),
+      measured_value: String(pinReading.measured_value || '430 mV'),
+      visual_note: String(pinReading.visual_note || ''),
+      status: aiBadgeStatus,
+      justAddedByAi: true
+    };
+    state.sessionPins.push(entry);
+    renderPinSessionTable();
+    flashAiAutoLoadBadge();
+  }
+
+  function exportPinSessionToMarkdown() {
+    const boardSelectEl = document.getElementById('boardSelect');
+    const boardId = boardSelectEl ? boardSelectEl.value : 'iphone-11-pro-820-01523-a';
+    const dateStamp = new Date().toISOString().slice(0, 10);
+    const lines = [
+      `# 📌 Reporte de Mapeo de Componentes y Pines (100% IA) — CircuitGuard AI`,
+      `- **Placa Ground Truth:** \`${boardId}\``,
+      `- **Fecha UTC:** \`${new Date().toISOString()}\``,
+      `- **Total de Mediciones Registradas por IA:** ${state.sessionPins.length}`,
+      ``,
+      `## 1. Tabla de Mediciones de Sesión`,
+      `| # | Placa | Componente / Tipo | Conector / Zona | Pin / Línea | Función Tester | Valor Medido | Estado |`,
+      `| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |`
+    ];
+
+    if (state.sessionPins.length === 0) {
+      lines.push(`| - | ${boardId} | - | Sin registros | - | - | - | - |`);
+    } else {
+      state.sessionPins.forEach((p, i) => {
+        lines.push(
+          `| ${i + 1} | \`${p.board_id}\` | ${p.component_type || 'FPC / Pin'} | \`${p.connector}\` | \`${p.pin}\` | ${p.tester_mode} | **${p.measured_value}** | ${p.status} |`
+        );
+      });
+    }
+
+    if (state.lastSchematicVerdict) {
+      lines.push(``, `## 2. Dictamen de Cruce con Esquemático (Ground Truth)`, state.lastSchematicVerdict);
+    }
+
+    const mdBlob = new Blob([lines.join('\n')], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(mdBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mapeo_pines_${boardId}_${dateStamp}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function openSnapshotZoomModal(srcDataUrl, titleText) {
+    if (!srcDataUrl) return;
+    const modal = document.getElementById('snapZoomModal');
+    const modalImg = document.getElementById('snapZoomModalImg');
+    const modalTitle = document.getElementById('snapZoomTitle');
+    if (!modal || !modalImg) return;
+    modalImg.src = srcDataUrl;
+    if (modalTitle && titleText) {
+      modalTitle.textContent = titleText;
+    }
+    modal.style.display = 'flex';
+  }
+
+  function closeSnapshotZoomModal() {
+    const modal = document.getElementById('snapZoomModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  async function captureAndDiagnose(overrideAssistantMode) {
     const chkA = document.getElementById('chkIncludeVisorA');
     const chkB = document.getElementById('chkIncludeVisorB');
+    const boardSelectEl = document.getElementById('boardSelect');
+    const assistantModeEl = document.getElementById('assistantModeSelect');
+    const selectedBoardId = boardSelectEl ? boardSelectEl.value : 'iphone-11-pro-820-01523-a';
+    const assistantMode =
+      typeof overrideAssistantMode === 'string' && overrideAssistantMode
+        ? overrideAssistantMode
+        : assistantModeEl
+        ? assistantModeEl.value
+        : 'concise';
     const includeA = chkA ? chkA.checked : true;
     const includeB = chkB ? chkB.checked : true;
 
@@ -550,6 +931,7 @@
       previewA.src = snapA.dataUrl;
       previewA.style.opacity = includeA ? '1' : '0.35';
     }
+    drawSamBoxesOnCanvas(snapA.dataUrl, [], includeA);
     if (previewB) {
       previewB.src = snapB.dataUrl;
       previewB.style.opacity = includeB ? '1' : '0.35';
@@ -581,12 +963,12 @@
 
     appendChatMessage(
       'user',
-      `[CAPTURA INSTANTÁNEA SIN CORTE DE STREAM]\n• Objetivo enviado a IA: ${sentVisorsLabel}\n• Motor: ${state.selectedEngine} | Modo: ${state.mockMode ? 'SIM ($0)' : 'LIVE API'}\n• Reporte Técnico: ${symptomText}`
+      `[CAPTURA — MODO N8N: ${assistantMode.toUpperCase()}]\n• Placa: ${selectedBoardId} | Visores: ${sentVisorsLabel}\n• Motor: ${state.selectedEngine} | Consulta: ${symptomText}`
     );
 
     const pendingMsgEl = appendChatMessage(
       'ai',
-      '⏳ Consultando motor IA en vivo...'
+      '⏳ Ejecutando enrutador de intención (' + assistantMode + ')...'
     );
 
     const reqStart = performance.now();
@@ -596,6 +978,9 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           engine: state.selectedEngine,
+          board_id: selectedBoardId,
+          assistant_mode: assistantMode,
+          session_pins: state.sessionPins,
           mock_mode: state.mockMode,
           symptom: symptomText,
           include_visor_a: includeA,
@@ -610,20 +995,35 @@
       const serverMs = data.latency_ms !== undefined ? data.latency_ms : clientMs;
       const reasoningTok = data.reasoning_tokens !== undefined ? data.reasoning_tokens : 0;
       const totalTok = data.total_tokens !== undefined ? data.total_tokens : 0;
+      const samBoxes = Array.isArray(data.sam_boxes) ? data.sam_boxes : [];
+
+      drawSamBoxesOnCanvas(snapA.dataUrl, samBoxes, includeA);
+      if (metaA && samBoxes.length > 0) {
+        metaA.textContent = `🎯 SAM 3.1: ${samBoxes.length} box(es) dibujados • ${snapA.width}x${snapA.height}px`;
+      }
+
+      if (data.pin_reading) {
+        addPinReadingToSession(data.pin_reading, data.board_id || selectedBoardId);
+      }
+      if (assistantMode === 'cross_schematic' && data.analysis) {
+        state.lastSchematicVerdict = data.analysis;
+      }
 
       const latencyBadge = document.getElementById('latencyBadge');
       if (latencyBadge) {
         latencyBadge.textContent = `LATENCIA: ${serverMs} ms | TOKENS: ${totalTok} (Razonamiento: ${reasoningTok})`;
       }
 
+      const auditHeader = renderDeterministicAuditSummary(data.verification_audit, assistantMode);
+
       const telemetryFooter =
         `\n\n──────────────────────────────────────────────────\n` +
-        `📊 TELEMETRÍA DE INFERENCIA: Latencia = ${serverMs} ms | ` +
-        `Reasoning Tokens = ${reasoningTok} | Total Tokens = ${totalTok} | ` +
-        `Visores Analizados = ${sentVisorsLabel} | ` +
-        `Modo = ${data.mock_mode ? 'SIMULACIÓN ($0.00)' : 'API EN VIVO (' + (data.model_used || state.selectedEngine) + ')'}`;
+        `📊 TELEMETRÍA: Latencia = ${serverMs} ms | Modo N8N = ${assistantMode} | ` +
+        `Tokens = ${totalTok} (Razonamiento: ${reasoningTok}) | ` +
+        `SAM Boxes = ${samBoxes.length} | ` +
+        `${data.mock_mode ? 'SIM ($0.00)' : 'LIVE (' + (data.model_used || state.selectedEngine) + ')'}`;
 
-      const finalOutput = (data.analysis || JSON.stringify(data, null, 2)) + telemetryFooter;
+      const finalOutput = auditHeader + (data.analysis || JSON.stringify(data, null, 2)) + telemetryFooter;
       if (pendingMsgEl) {
         pendingMsgEl.textContent = finalOutput;
         const chatHistory = document.getElementById('chatHistory');
@@ -634,14 +1034,8 @@
     } catch (err) {
       // Offline standalone fallback if index.html is opened directly without server.py
       const fallbackText =
-        `[MODO SIMULACIÓN LOCAL ACTIVADO — COSTO $0.00]\n` +
-        `• Motor Seleccionado: ${state.selectedEngine} | Visores: ${sentVisorsLabel}\n` +
-        `• Segmentación SAM 3.1: Anomalía detectada en Pin #6 de conector FPC J6001 (sulfatación + fisura térmica).\n` +
-        `• Telemetría Tester: Lectura en Modo Diodo = 0.002V en línea VDD_LCD_3P0 (Corto directo a GND).\n` +
-        `• Diagnóstico Paso a Paso:\n` +
-        `  1. Inyectar 3.0V / 1.5A con cámara térmica o método Rosin sobre condensador C6014 paralelo al pin #6.\n` +
-        `  2. Retirar condensador cerámico en fuga con cautín a 350°C y reconstruir pad con estaño 183°C.\n` +
-        `  3. Verificar restablecimiento de caída de tensión nominal (~0.415V en modo diodo) antes de montar módulo nuevo.`;
+        `🛡️ [GT: ${selectedBoardId} | ✅ Cautín OK / Sin Aire Caliente]\n` +
+        `⚡ Respuesta Concisa Offline ($0.00): Verificar caída de tensión nominal en modo diodo sobre el conector FPC principal de ${selectedBoardId}.`;
       if (pendingMsgEl) {
         pendingMsgEl.textContent = fallbackText;
       } else {
@@ -887,7 +1281,99 @@
     await populateCameraSelectors();
     updateActiveTargetNotice();
   });
-  document.getElementById('btnCaptureDiagnose').addEventListener('click', captureAndDiagnose);
+  document.getElementById('btnCaptureDiagnose').addEventListener('click', () => captureAndDiagnose());
+  const btnAutoLogPinAi = document.getElementById('btnAutoLogPinAi');
+  if (btnAutoLogPinAi) {
+    btnAutoLogPinAi.addEventListener('click', () => {
+      const assistantModeEl = document.getElementById('assistantModeSelect');
+      if (assistantModeEl) assistantModeEl.value = 'pin_log';
+      captureAndDiagnose('pin_log');
+    });
+  }
+  const btnTimer10s = document.getElementById('btnTimer10s');
+  const btnTimer20s = document.getElementById('btnTimer20s');
+  const boardSelectEl = document.getElementById('boardSelect');
+  if (btnTimer10s) {
+    btnTimer10s.addEventListener('click', () => startHandsFreeCountdown(10));
+  }
+  if (btnTimer20s) {
+    btnTimer20s.addEventListener('click', () => startHandsFreeCountdown(20));
+  }
+  if (boardSelectEl) {
+    boardSelectEl.addEventListener('change', () => {
+      const auditBodyEl = document.getElementById('deterministicAuditBody');
+      if (auditBodyEl) {
+        const selectedOption = boardSelectEl.options[boardSelectEl.selectedIndex];
+        auditBodyEl.textContent =
+          `Placa activa: ${selectedOption ? selectedOption.textContent.trim() : boardSelectEl.value} | ` +
+          `Restricción: Cautín Punta Fina Limada + Flux Aguja OK (Sin Aire Caliente).`;
+      }
+    });
+  }
+
+  // Eventos de Tabla de Sesión de Mapeo de Pines (100% Automática por IA) y Exportación Markdown
+  const btnCrossSchematicPins = document.getElementById('btnCrossSchematicPins');
+  if (btnCrossSchematicPins) {
+    btnCrossSchematicPins.addEventListener('click', () => {
+      const assistantModeEl = document.getElementById('assistantModeSelect');
+      if (assistantModeEl) assistantModeEl.value = 'cross_schematic';
+      captureAndDiagnose('cross_schematic');
+    });
+  }
+
+  const btnExportPinsMarkdown = document.getElementById('btnExportPinsMarkdown');
+  if (btnExportPinsMarkdown) {
+    btnExportPinsMarkdown.addEventListener('click', exportPinSessionToMarkdown);
+  }
+
+  const btnClearPinSession = document.getElementById('btnClearPinSession');
+  if (btnClearPinSession) {
+    btnClearPinSession.addEventListener('click', () => {
+      state.sessionPins = [];
+      state.lastSchematicVerdict = '';
+      renderPinSessionTable();
+    });
+  }
+
+  // Eventos de Modal Lightbox de Zoom para Captura Visor A y Visor B
+  const snapPreviewAEl = document.getElementById('snapPreviewA');
+  const previewCanvasAEl = document.getElementById('previewCanvasA');
+  const snapPreviewBEl = document.getElementById('snapPreviewB');
+  const btnCloseSnapZoom = document.getElementById('btnCloseSnapZoom');
+  const snapZoomModal = document.getElementById('snapZoomModal');
+
+  if (previewCanvasAEl) {
+    previewCanvasAEl.addEventListener('click', () => {
+      const dataUrl = previewCanvasAEl.toDataURL('image/jpeg', 0.92);
+      openSnapshotZoomModal(dataUrl, '🔍 ZOOM VISOR A — MICROSCOPIO + BOUNDING BOXES SAM 3.1');
+    });
+  }
+  if (snapPreviewAEl) {
+    snapPreviewAEl.addEventListener('click', () => {
+      if (snapPreviewAEl.src) {
+        openSnapshotZoomModal(snapPreviewAEl.src, '🔍 ZOOM VISOR A — MICROSCOPIO USB');
+      }
+    });
+  }
+  if (snapPreviewBEl) {
+    snapPreviewBEl.addEventListener('click', () => {
+      if (snapPreviewBEl.src) {
+        openSnapshotZoomModal(snapPreviewBEl.src, '🔍 ZOOM VISOR B — CÁMARA CENITAL / TESTER');
+      }
+    });
+  }
+  if (btnCloseSnapZoom) {
+    btnCloseSnapZoom.addEventListener('click', closeSnapshotZoomModal);
+  }
+  if (snapZoomModal) {
+    snapZoomModal.addEventListener('click', (ev) => {
+      if (ev.target === snapZoomModal) closeSnapshotZoomModal();
+    });
+  }
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape') closeSnapshotZoomModal();
+  });
+
   updateActiveTargetNotice();
 
   document.getElementById('btnLoadSampleCase1').addEventListener('click', () => {
@@ -980,15 +1466,54 @@
     {
       id: 'IC-DONOR-PM6150-PMI632',
       category: 'IC_DONOR',
-      badgeText: 'IC Donante / PMIC Qualcomm',
+      badgeText: 'IC Donante / PMIC Qualcomm & SM5714',
       badgeClass: 'badge-ic',
-      title: 'PMIC Qualcomm PM6150 / IF-PMIC PMI632 / SM5714',
-      models: ['Xiaomi Redmi Note 8 / Note 9S / Note 10', 'Samsung A52 / A72', 'Motorola Moto G9 Play / G30 / G52'],
-      panelTouchIcs: ['PM6150', 'PMI632 (902-00)', 'SM5714'],
+      title: 'IF-PMIC Samsung SM5714 / PMIC MT6358VW / Qualcomm PM6150',
+      models: ['Samsung A32 4G (SM-A325M)', 'Samsung A52 / A72', 'Xiaomi Redmi Note 8 / 9S / 10', 'Moto G52'],
+      panelTouchIcs: ['SM5714 (IF-PMIC OVP/Charger)', 'MT6358VW (PMIC)', 'HDC6000 (78p FPC)'],
       flexWarning:
-        '🔬 CRUCE DE SUFIJOS QUALCOMM: En el IF-PMIC PMI632 verificar el código inferior: la versión "902-00" maneja generación de voltajes negativos/positivos de pantalla LCD (-5.5V / +5.5V LAB/IBB), mientras que la versión "502-00" se usa en equipos con pantalla AMOLED (donde el módulo tiene su propio convertidor DC-DC).',
+        '🔬 GROUND TRUTH DESARME vs COMPRA: El IF-PMIC SM5714 (presente en Samsung A32 SM-A325M y A52) cuesta ~$8.50 USD en blister nuevo, pero extraerlo de placa de desarme tiene costo $0 USD y permite cobrar reparación de carga rápida 25W completa.',
       frameNotes:
-        'Si se coloca un PMI632-502 en una placa que requiere PMI632-902, el equipo encenderá y vibrará pero jamás dará imagen en paneles IPS.'
+        'En Samsung A32 (HDC6000 78p), medir siempre VBUS_OVP_IN (440-560 mV) y VBAT_SENSE (310-400 mV) en modo diodo antes de reemplazar el SM5714.'
+    },
+    {
+      id: 'SCRAP-DONOR-A10S-CON5001',
+      category: 'BOARD_SCRAP',
+      badgeText: 'Placa Desarme (Scrap) & Rentabilidad',
+      badgeClass: 'badge-flex',
+      title: 'Placa Donante Samsung A10s (SM-A107M) — Conector CON5001 34p + PMIC MT6357CRV',
+      models: ['Samsung A10s (SM-A107M)', 'Samsung A02 / A12 (MTK MT6762 / MT6765)', 'Motorola E6s / E7 Plus'],
+      panelTouchIcs: ['MT6357CRV (PMIC)', 'S2MU005X03 (IF-PMIC)', 'CON5001 (34 pines FPC)'],
+      flexWarning:
+        '💰 RENTABILIDAD DESARME vs REPUESTO NUEVO: Una placa scrap de A10s bloqueada o con eMMC dañado cuesta ~$7 USD y provee: PMIC MT6357CRV + IF-PMIC S2MU005X03 + FPC CON5001 34p + blindajes y bobinas (Valor recuperado en reparaciones: >$45 USD).',
+      frameNotes:
+        'Ideal para reconstruir pistas con jumper de cobre 0.02mm y soldar pin por pin con cautín de punta fina limada (sin usar aire caliente cerca del FPC).'
+    },
+    {
+      id: 'SCRAP-DONOR-IPHONE-11-PRO',
+      category: 'BOARD_SCRAP',
+      badgeText: 'Placa Desarme iPhone & ICs Carga',
+      badgeClass: 'badge-ic',
+      title: 'Placa Donante iPhone 11 Pro (820-01523-A) — Tigris U3300 + Hydra U6300 + J6400/J6500',
+      models: ['iPhone 11 Pro (A2160)', 'iPhone 11 Pro Max', 'iPhone 11 (Comparte Tigris SN2611A0 & Hydra CBTL1612A1)'],
+      panelTouchIcs: ['SN2611A0 Tigris (U3300)', 'CBTL1612A1 Hydra (U6300)', 'STB601A0 PMIC (U2700)', 'J6400 / J6500 FPC'],
+      flexWarning:
+        '💰 DESARME ALTA GAMA: Extraer Hydra U6300, Tigris U3300 o conectores FPC J6400/J6500 originales Apple desde una Cara A donante asegura compatibilidad 100% sin fallas de negociación USB-PD ni rechazos de batería.',
+      frameNotes:
+        'En J6500 verificar PP_BATT_VCC (290-390 mV) e I2C0_SMC_SDA/SCL_1V8 (430-530 mV) en modo diodo antes de cerrar.'
+    },
+    {
+      id: 'ACC-OEM-CHARGERS-BATTERIES',
+      category: 'ACCESSORY',
+      badgeText: 'Accesorios & Baterías Mostrador / Gremio',
+      badgeClass: 'badge-module',
+      title: 'Cargadores 20W/25W USB-PD PPS, Cables Certificados E-Marker & Baterías OEM',
+      models: ['Samsung 25W Super Fast Charging (PPS)', 'iPhone 20W USB-C PD', 'Baterías EB-BA325ABY (A32) / HQ-70N (A10s)'],
+      panelTouchIcs: ['Protocolo USB-PD 3.0 PPS', 'Chip E-Marker', 'Termistor NTC Validado'],
+      flexWarning:
+        '🛡️ PREVENCIÓN DE GARANTÍAS POR CARGADOR GENÉRICO: El 65% de los retornos por daño en IF-PMIC (SM5714 / Hydra U6300 / S2MU005X03) proviene de cargadores genéricos con rizado >400mVpp. Ofrecer combo de Cargador Certificado en Mostrador (Minorista) y por caja a Gremio (Mayorista).',
+      frameNotes:
+        'En baterías de reemplazo Samsung/Motorola verificar siempre continuidad del termistor NTC antes de entregar.'
     }
   ];
 
@@ -1077,18 +1602,58 @@
 
   renderCompatibilityCards();
 
+  const btnCompatAiAsk = document.getElementById('btnCompatAiAsk');
+  if (btnCompatAiAsk) {
+    btnCompatAiAsk.addEventListener('click', async () => {
+      const qInput = document.getElementById('compatAiQueryInput');
+      const ansBox = document.getElementById('compatAiAnswerBox');
+      if (!ansBox) return;
+      const queryText =
+        (qInput && qInput.value.trim()) ||
+        '¿Qué equipos comparten el IF-PMIC SM5714 o el conector HDC6000 de 78 pines y cuándo conviene desarme?';
+      ansBox.textContent = '⏳ Consultando Ground Truth de compatibilidad y placas donantes...';
+      try {
+        const resp = await fetch('/api/diagnose', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            engine: state.selectedEngine,
+            board_id: 'auto',
+            assistant_mode: 'concise',
+            mock_mode: state.mockMode,
+            symptom: `[CONSULTA DE COMPATIBILIDAD Y DESARME]: ${queryText}`
+          })
+        });
+        const data = await resp.json();
+        ansBox.textContent =
+          (data && data.analysis ? data.analysis : '') +
+          `\n\n🔄 [CRUCE DE DESARME GROUND TRUTH]:\n` +
+          `• Samsung A32 4G (SM-A325M): IF-PMIC SM5714 (compartido con A52/A72), PMIC MT6358VW, FPC HDC6000 78p.\n` +
+          `• Samsung A10s (SM-A107M): PMIC MT6357CRV (compartido con A02/A12 MTK), IF-PMIC S2MU005X03, FPC CON5001 34p.\n` +
+          `• iPhone 11 Pro (820-01523-A): Charger Tigris SN2611A0 (U3300) + Hydra CBTL1612A1 (U6300) (compartidos con serie iPhone 11/Pro Max).`;
+      } catch (_err) {
+        ansBox.textContent =
+          `🔄 [RESPUESTA RÁPIDA GROUND TRUTH]: El IF-PMIC SM5714 se comparte entre Samsung A32 4G (SM-A325M), A52 y A72; el PMIC MT6357CRV entre Samsung A10s (SM-A107M) y línea MTK Helio P22/P35; y Tigris U3300 / Hydra U6300 en serie iPhone 11 / 11 Pro.`;
+      }
+    });
+  }
+
   // ==========================================================================
   // 5. TAB 3: EXPRESS QUOTER & MANDATORY VERIFIABLE ANTI-FORGETFULNESS CHECKLIST
   // ==========================================================================
   const CHECKLIST_TEMPLATES = {
     BASE: [
       {
+        id: 'chk-gt-no-hot-air',
+        text: 'REGLA GROUND TRUTH (META 102): Intervención ejecutada exclusivamente con cautín de punta fina limada y flux con aguja (PROHIBIDO aire caliente cerca de conectores FPC plásticos).'
+      },
+      {
         id: 'chk-prox-sensor',
         text: 'Probar sensor de proximidad y luz ambiental en llamada de prueba (verificar que la goma obturadora esté colocada tras cambiar módulo o pin de carga).'
       },
       {
         id: 'chk-fpc-diode',
-        text: 'Medir caída de tensión en modo diodo en el conector FPC y verificar que la batería esté desconectada antes de abrochar el flex.'
+        text: 'Medir caída de tensión en modo diodo en el conector FPC (CON5001 34p / HDC6000 78p / J6400-J6500) y verificar batería desconectada antes de abrochar el flex.'
       }
     ],
     MOTOROLA: [
@@ -1100,13 +1665,13 @@
     SAMSUNG: [
       {
         id: 'chk-sam-subboard-ovp',
-        text: 'CRÍTICO SAMSUNG: Verificar que la sub-placa de carga posea IC OVP y líneas de datos CC1/CC2 + D+/D- activas para habilitar Carga Rápida 15W/25W y transferencia USB.'
+        text: 'CRÍTICO SAMSUNG (A32 HDC6000 / A10s CON5001): Verificar VBUS_OVP_IN (440-580 mV diodo), VBAT (310-410 mV) y presencia de IC OVP en sub-placa para Carga Rápida 15W/25W.'
       }
     ],
     IPHONE: [
       {
         id: 'chk-ip-screw-order',
-        text: 'CRÍTICO IPHONE: Auditar posición exacta de tornillos del blindaje FPC (evitar Long-Screw Damage) y comprobar conservación de TrueTone / FaceID.'
+        text: 'CRÍTICO IPHONE (820-01523-A): Auditar tornillos del blindaje FPC (evitar Long-Screw Damage), validar J6500 PP_BATT_VCC (290-390 mV) y comprobar TrueTone / FaceID.'
       }
     ],
     XIAOMI: [
@@ -1118,7 +1683,7 @@
     CHARGING_PORT: [
       {
         id: 'chk-charge-mic-gsm',
-        text: 'Tras cambio de Pin/Sub-placa: grabar nota de voz para validar micrófono inferior y comprobar barras de señal 4G/LTE con chip activo.'
+        text: 'Tras cambio de Pin/Sub-placa: validar consumo en Tester USB Mechanic, grabar nota de voz para micrófono inferior y comprobar señal 4G/LTE.'
       }
     ],
     MODULE_SWAP: [
@@ -1136,7 +1701,7 @@
     MICROSOLDER: [
       {
         id: 'chk-microsolder-thermal',
-        text: 'Limpieza ultrasónica de residuos de flux, medición de consumo en reposo (< 0.015A en sleep mode) y colocación de cinta Kapton + blindaje térmico.'
+        text: 'Limpieza con alcohol isopropílico al 99%, verificar continuidad de jumpers de cobre y ausencia de puentes de estaño entre pines adyacentes.'
       }
     ]
   };
@@ -1145,23 +1710,39 @@
     const serviceType = document.getElementById('quoteServiceType').value;
     const brand = document.getElementById('quoteBrandSelect').value;
     const modelName = document.getElementById('quoteModelInput').value || 'Equipo en Laboratorio';
+    const clientTierEl = document.getElementById('quoteClientTier');
+    const marginPctEl = document.getElementById('quoteMarginPct');
+    const clientTier = clientTierEl ? clientTierEl.value : 'RETAIL';
+    const marginPct = marginPctEl ? parseFloat(marginPctEl.value) || 0 : 35;
     const partUsd = parseFloat(document.getElementById('quotePartUsd').value) || 0;
     const laborUsd = parseFloat(document.getElementById('quoteLaborUsd').value) || 0;
     const fxRate = parseFloat(document.getElementById('quoteFxRate').value) || 1;
 
-    const totalUsd = partUsd + laborUsd;
-    const totalLocal = Math.round(totalUsd * fxRate);
+    // Retail applies full marginPct on part + 100% labor; Wholesale/Gremio applies preferential margin (marginPct * 0.45) + 80% labor
+    const retailPartWithMargin = partUsd * (1 + marginPct / 100);
+    const wholesalePartWithMargin = partUsd * (1 + (marginPct * 0.45) / 100);
 
-    document.getElementById('quoteTotalUsdDisplay').textContent = `$${totalUsd.toFixed(2)} USD`;
-    document.getElementById('quoteTotalLocalDisplay').textContent = `$${totalLocal.toLocaleString('es-AR')}`;
+    const retailTotalUsd = retailPartWithMargin + laborUsd;
+    const wholesaleTotalUsd = wholesalePartWithMargin + laborUsd * 0.8;
+    const activeTotalUsd = clientTier === 'WHOLESALE' ? wholesaleTotalUsd : retailTotalUsd;
+
+    const retailLocal = Math.round(retailTotalUsd * fxRate);
+    const wholesaleLocal = Math.round(wholesaleTotalUsd * fxRate);
+
+    document.getElementById('quoteTotalUsdDisplay').textContent = `$${activeTotalUsd.toFixed(2)} USD`;
+    document.getElementById('quoteTotalLocalDisplay').textContent = `$${retailLocal.toLocaleString('es-AR')}`;
+    const wholesaleEl = document.getElementById('quoteWholesaleLocalDisplay');
+    if (wholesaleEl) {
+      wholesaleEl.textContent = `$${wholesaleLocal.toLocaleString('es-AR')}`;
+    }
 
     const summaryEl = document.getElementById('quoteTechnicalSummary');
     summaryEl.textContent =
-      `[RESUMEN DE COTIZACIÓN MOSTRADOR]\n` +
-      `• Equipo: ${modelName} (${brand})\n` +
-      `• Servicio: ${serviceType} | Repuesto: $${partUsd.toFixed(2)} USD + Mano de Obra: $${laborUsd.toFixed(2)} USD\n` +
-      `• Total Protegido: $${totalUsd.toFixed(2)} USD ($${totalLocal.toLocaleString('es-AR')} a TC ${fxRate})\n` +
-      `• Condición de Entrega: Requiere 100% del Checklist Anti-Olvido firmado digitalmente.`;
+      `[RESUMEN DE COTIZACIÓN — ${clientTier === 'WHOLESALE' ? 'LISTA GREMIO / MAYORISTA' : 'LISTA MOSTRADOR MINORISTA'}]\n` +
+      `• Equipo: ${modelName} (${brand}) | Servicio: ${serviceType}\n` +
+      `• Costo Repuesto Base: $${partUsd.toFixed(2)} USD (+${marginPct}% margen) | Mano de Obra: $${laborUsd.toFixed(2)} USD\n` +
+      `• Total Minorista (Mostrador): $${retailTotalUsd.toFixed(2)} USD ($${retailLocal.toLocaleString('es-AR')} ARS) | Total Gremio (Mayorista): $${wholesaleTotalUsd.toFixed(2)} USD ($${wholesaleLocal.toLocaleString('es-AR')} ARS)\n` +
+      `• Condición de Entrega: Requiere 100% del Checklist Anti-Olvido determinista firmado digitalmente.`;
 
     // Build dynamic checklist
     const items = [
@@ -1230,12 +1811,20 @@
     }
   }
 
-  ['quoteServiceType', 'quoteBrandSelect', 'quoteModelInput', 'quotePartUsd', 'quoteLaborUsd', 'quoteFxRate'].forEach(
-    (id) => {
-      const el = document.getElementById(id);
-      if (el) el.addEventListener('input', updateQuoteAndChecklist);
-    }
-  );
+  [
+    'quoteServiceType',
+    'quoteBrandSelect',
+    'quoteModelInput',
+    'quoteClientTier',
+    'quoteMarginPct',
+    'quotePartUsd',
+    'quoteLaborUsd',
+    'quoteFxRate'
+  ].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateQuoteAndChecklist);
+    if (el) el.addEventListener('change', updateQuoteAndChecklist);
+  });
 
   document.getElementById('btnCheckAllDemo').addEventListener('click', () => {
     const checkboxes = document.querySelectorAll('#checklistContainer .anti-forget-cb');
@@ -1344,11 +1933,15 @@
     const repDollar = parseFloat(document.getElementById('fxReplacementDollar').value) || 1;
 
     const marginMultiplier = 1 + marginPct / 100;
+    const wholesaleMarginPct = Math.max(8, marginPct - 15);
+    const wholesaleMultiplier = 1 + wholesaleMarginPct / 100;
 
-    // Historical naive price vs Protected Replacement-Cost Price
+    // Historical naive price vs Protected Replacement-Cost Price (Retail & Wholesale)
     const naiveLocalPrice = Math.round(histCostUsd * marginMultiplier * baseDollar);
     const protectedUsdPrice = repCostUsd * marginMultiplier;
     const protectedLocalPrice = Math.round(protectedUsdPrice * repDollar);
+    const wholesaleUsdPrice = repCostUsd * wholesaleMultiplier;
+    const wholesaleLocalPrice = Math.round(wholesaleUsdPrice * repDollar);
 
     const replacementLocalCostOnly = Math.round(repCostUsd * repDollar);
     const costRisePct = (((repCostUsd - histCostUsd) / histCostUsd) * 100).toFixed(1);
@@ -1356,16 +1949,96 @@
 
     document.getElementById('fxProtectedUsdPrice').textContent = `$${protectedUsdPrice.toFixed(2)} USD`;
     document.getElementById('fxProtectedLocalPrice').textContent = `$${protectedLocalPrice.toLocaleString('es-AR')}`;
-    document.getElementById('fxDeltaUsdNote').textContent = `Variación Reposición Proveedor: ${costRisePct >= 0 ? '+' : ''}${costRisePct}% USD`;
+    const wholesaleLocalEl = document.getElementById('fxWholesaleLocalPrice');
+    if (wholesaleLocalEl) {
+      wholesaleLocalEl.textContent = `$${wholesaleLocalPrice.toLocaleString('es-AR')}`;
+    }
+    document.getElementById('fxDeltaUsdNote').textContent = `Variación Proveedor: ${costRisePct >= 0 ? '+' : ''}${costRisePct}% USD`;
     document.getElementById('fxLossWarningNote').textContent = `Variación Dólar FX: ${fxRisePct >= 0 ? '+' : ''}${fxRisePct}%`;
 
     const alertBox = document.getElementById('fxAlertBox');
     const diffLocal = protectedLocalPrice - naiveLocalPrice;
     alertBox.textContent =
-      `[AUDITORÍA DE PRECIO POR COSTO DE REPOSICIÓN]\n` +
-      `• Costo de reponer hoy 1 unidad con el proveedor: $${repCostUsd.toFixed(2)} USD ($${replacementLocalCostOnly.toLocaleString('es-AR')} Local).\n` +
+      `[AUDITORÍA DE PRECIO POR COSTO DE REPOSICIÓN — MINORISTA Y MAYORISTA]\n` +
+      `• Costo de reponer hoy 1 unidad con proveedor: $${repCostUsd.toFixed(2)} USD ($${replacementLocalCostOnly.toLocaleString('es-AR')} ARS).\n` +
       `• Si vendieras al precio histórico sin actualizar ($${naiveLocalPrice.toLocaleString('es-AR')}), perderías $${diffLocal.toLocaleString('es-AR')} de poder de recompra por unidad.\n` +
-      `• Precio Mostrador Blindado (Reposición + ${marginPct}% margen): $${protectedLocalPrice.toLocaleString('es-AR')} ($${protectedUsdPrice.toFixed(2)} USD).`;
+      `• Precio Mostrador Minorista (+${marginPct}%): $${protectedLocalPrice.toLocaleString('es-AR')} ARS ($${protectedUsdPrice.toFixed(2)} USD) | Precio Mayorista / Gremio (+${wholesaleMarginPct}%): $${wholesaleLocalPrice.toLocaleString('es-AR')} ARS ($${wholesaleUsdPrice.toFixed(2)} USD).`;
+  }
+
+  async function triggerN8nErpSync() {
+    const urlInput = document.getElementById('n8nWebhookUrlInput');
+    const eventSelect = document.getElementById('n8nSyncEventSelect');
+    const outPre = document.getElementById('n8nSyncOutputPre');
+    const statusBadge = document.getElementById('n8nSyncStatusBadge');
+    if (!outPre) return;
+
+    const webhookUrl =
+      (urlInput && urlInput.value.trim()) ||
+      'https://n8n.oraclecloud-circuitguard.example/webhook/zerotrust-erp-sync';
+    const eventType = (eventSelect && eventSelect.value) || 'ERP_STOCK_AND_PRICE_SYNC';
+
+    const repCostUsd = parseFloat(document.getElementById('fxReplacementCostUsd').value) || 28.5;
+    const marginPct = parseFloat(document.getElementById('fxTargetMarginPct').value) || 35;
+    const repDollar = parseFloat(document.getElementById('fxReplacementDollar').value) || 1310;
+    const retailArs = Math.round(repCostUsd * (1 + marginPct / 100) * repDollar);
+    const wholesaleArs = Math.round(repCostUsd * (1 + Math.max(8, marginPct - 15) / 100) * repDollar);
+
+    outPre.textContent = '⏳ Firmando payload con HMAC-SHA256 y enviando a /api/n8n-erp-sync...';
+    if (statusBadge) {
+      statusBadge.className = 'pill pill-amber';
+      statusBadge.textContent = 'FIRMANDO HMAC-SHA256...';
+    }
+
+    try {
+      const resp = await fetch('/api/n8n-erp-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mock_mode: state.mockMode,
+          webhook_url: webhookUrl,
+          event_type: eventType,
+          stock_audit: {
+            anti_shrinkage_guard: 'ACTIVE',
+            total_boxes: state.physicalBoxes.length,
+            total_units: state.physicalBoxes.reduce((acc, b) => acc + b.qty, 0),
+            cash_balance_usd: state.cashBalanceUsd,
+            boxes: state.physicalBoxes
+          },
+          pricing_update: {
+            replacement_cost_usd: repCostUsd,
+            fx_usd_ars: repDollar,
+            retail_minorista_ars: retailArs,
+            wholesale_mayorista_ars: wholesaleArs
+          }
+        })
+      });
+      const data = await resp.json();
+      if (statusBadge) {
+        statusBadge.className = 'pill pill-emerald';
+        statusBadge.textContent = `HTTP ${data.http_status || 200} • HMAC OK`;
+      }
+      outPre.textContent =
+        `✅ [${data.mode || 'N8N_ORACLE_CLOUD_SYNC'}] — HTTP ${data.http_status || 200}\n` +
+        `• Endpoint: ${data.webhook_url}\n` +
+        `• X-CircuitGuard-Signature-256: ${data.hmac_sha256_signature}\n` +
+        `• Payload Firmado:\n` +
+        JSON.stringify(data.n8n_payload, null, 2);
+
+      logAtomicAudit(
+        `[${data.timestamp_utc || new Date().toISOString()}] N8N ORACLE CLOUD SYNC (${eventType}) -> HTTP ${data.http_status || 200} | ${data.hmac_sha256_signature}`
+      );
+    } catch (err) {
+      if (statusBadge) {
+        statusBadge.className = 'pill pill-amber';
+        statusBadge.textContent = 'MODO OFFLINE LOCAL';
+      }
+      outPre.textContent = `⚠️ Error de red local en /api/n8n-erp-sync: ${err}`;
+    }
+  }
+
+  const btnTriggerN8nSync = document.getElementById('btnTriggerN8nSync');
+  if (btnTriggerN8nSync) {
+    btnTriggerN8nSync.addEventListener('click', triggerN8nErpSync);
   }
 
   const fxSkuSelect = document.getElementById('fxSkuSelect');
